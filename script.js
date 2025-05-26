@@ -131,7 +131,7 @@ window.addEventListener("wheel", (e) => {
 
 async function fetchVideos() {
     try {
-        const response = await fetch('http://16.170.228.154:5000/fetch-videos'); // replace with actual API
+        const response = await fetch('https://16.170.228.154:5000/fetch-videos'); // replace with actual API
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();

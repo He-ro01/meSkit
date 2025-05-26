@@ -1,55 +1,29 @@
 <head>
   <meta name="viewport" content="width=device-width">
-</head>
-
-<body>
-  <video id="video" controls autoplay playsinline style="width: 100%; max-width: 600px;">
-    <source src="https://api.redgifs.com/v2/gifs/surpriseddownrighttrout/sd.m3u8" type="application/vnd.apple.mpegurl" />
-    Your browser does not support HLS.
-  </video>
-
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+  <video id="video" controls autoplay style="max-width: 100%;"></video>
+
   <script>
     const video = document.getElementById('video');
-    const videoSrc = "https://api.redgifs.com/v2/gifs/surpriseddownrighttrout/sd.m3u8";
+    const videoSrc = "https://zidit.s3.eu-north-1.amazonaws.com/hls/6f7e320d-8978-4bdb-ba35-69c34498c4f0/output.m3u8";
 
     if (Hls.isSupported()) {
       const hls = new Hls();
-
       hls.loadSource(videoSrc);
       hls.attachMedia(video);
-
-      hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
-        // Select lowest quality level by choosing the level with lowest bitrate
-        if (data && data.levels && data.levels.length) {
-          let lowestLevelIndex = 0;
-          let lowestBitrate = data.levels[0].bitrate;
-
-          for (let i = 1; i < data.levels.length; i++) {
-            if (data.levels[i].bitrate < lowestBitrate) {
-              lowestBitrate = data.levels[i].bitrate;
-              lowestLevelIndex = i;
-            }
-          }
-
-          hls.startLevel = lowestLevelIndex;
-          console.log(`Starting playback at lowest quality level: ${lowestLevelIndex} (bitrate: ${lowestBitrate})`);
-        }
-
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video.play();
       });
-
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        console.error("hls.js error:", data);
-      });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Native HLS support (Safari, iOS)
+      // Safari supports HLS natively
       video.src = videoSrc;
       video.addEventListener('loadedmetadata', () => {
         video.play();
       });
     } else {
-      console.error('HLS not supported in this browser');
+      console.error("HLS not supported in this browser.");
     }
   </script>
 </body>

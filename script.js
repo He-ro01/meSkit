@@ -32,7 +32,7 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
     }
 
     const video = document.createElement("video");
-    video.src = "mov_bbb.mp4";
+    video.src = videoData.videoUrl;
     video.controls = true;
     video.autoplay = autoplay;
     video.muted = true;
@@ -40,7 +40,8 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
     video.playsInline = true;
     video.preload = "auto";
     video.style.width = "100%";
-    video.playsInline - true; // For iOS compatibility
+    video.playsInline = true; // For iOS compatibility
+
     // On loadeddata, if autoplay requested, try to play
     video.addEventListener("loadeddata", () => {
         video.currentTime = 0;
@@ -53,7 +54,7 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
         console.log(`Video loaded: ${videoData.videoUrl}`);
     });
 
-    pageElement.innerHTML = "<p>"video"<p>"; // Clear previous content
+    pageElement.appendChild(video);
 }
 
 function switchToPage(newPageIndex) {

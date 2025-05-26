@@ -32,7 +32,7 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
     }
 
     const video = document.createElement("video");
-    video.src = videoData.videoUrl;
+    video.src = "https://www.bigbuckbunny.org/";
     video.controls = true;
     video.autoplay = autoplay;
     video.muted = true;

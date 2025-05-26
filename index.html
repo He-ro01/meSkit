@@ -15,11 +15,30 @@
 
     if (Hls.isSupported()) {
       const hls = new Hls();
+
       hls.loadSource(videoSrc);
       hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+
+      hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
+        // Select lowest quality level by choosing the level with lowest bitrate
+        if (data && data.levels && data.levels.length) {
+          let lowestLevelIndex = 0;
+          let lowestBitrate = data.levels[0].bitrate;
+
+          for (let i = 1; i < data.levels.length; i++) {
+            if (data.levels[i].bitrate < lowestBitrate) {
+              lowestBitrate = data.levels[i].bitrate;
+              lowestLevelIndex = i;
+            }
+          }
+
+          hls.startLevel = lowestLevelIndex;
+          console.log(`Starting playback at lowest quality level: ${lowestLevelIndex} (bitrate: ${lowestBitrate})`);
+        }
+
         video.play();
       });
+
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error("hls.js error:", data);
       });

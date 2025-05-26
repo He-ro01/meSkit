@@ -40,6 +40,7 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
     video.playsInline = true;
     video.preload = "auto";
     video.style.width = "100%";
+    video.playsInline - true; // For iOS compatibility
 
     // On loadeddata, if autoplay requested, try to play
     video.addEventListener("loadeddata", () => {

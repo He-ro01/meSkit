@@ -33,7 +33,7 @@ function loadVideoToPage(pageElement, videoData) {
 
     const video = document.createElement('video');
     video.src = videoData.videoUrl;
-    video.controls = false;
+    video.controls = true;
     video.autoplay = true;
     video.muted = true;
     video.loop = true;
@@ -44,71 +44,90 @@ function loadVideoToPage(pageElement, videoData) {
     video.addEventListener('loadeddata', () => {
         video.currentTime = 0;
         video.play();
+        console.log(`Video loaded: ${videoData.videoUrl}`);
     });
 
     pageElement.appendChild(video);
 }
+//
+function loadVideoToPagePaused(pageElement, videoData) {
+    clearPageVideos(pageElement);
 
+    if (!videoData || !videoData.videoUrl) {
+        pageElement.innerHTML = '<p>No video available</p>';
+        return;
+    }
+
+    const video = document.createElement('video');
+    video.src = videoData.videoUrl;
+    video.controls = true;
+    video.autoplay = false;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.style.width = '100%';
+
+    video.addEventListener('loadeddata', () => {
+        video.currentTime = 0;
+        video.play();
+        console.log(`Video loaded: ${videoData.videoUrl}`);
+    });
+
+    pageElement.appendChild(video);
+}
+//
 function scrollUp() {
     if (isAnimating) return;
     if (videoIndex >= videos.length - 1) return;
 
     pauseCurrentVideo();
-
     isAnimating = true;
     videoIndex++;
 
     const nextPage = currentPage === 1 ? page2 : page1;
-    loadVideoToPage(nextPage, videos[videoIndex]);
+    loadVideoToPagePaused(nextPage, videos[videoIndex]);
 
+    // Animate both pages moving up by 100vh
     page1.style.transition = page2.style.transition = "transform 0.3s ease";
-    page1.style.transform = page2.style.transform = `translateY(-100vh)`;
+    page1.style.transform = "translateY(-100vh)";
+    page2.style.transform = "translateY(-100vh)";
 
     setTimeout(() => {
+        // Reset transitions and positions after animation
         page1.style.transition = page2.style.transition = "none";
-
-        if (currentPage === 1) {
-            page1.style.transform = "translateY(100vh)";
-            page2.style.transform = "translateY(0)";
-            currentPage = 2;
-        } else {
-            page2.style.transform = "translateY(100vh)";
-            page1.style.transform = "translateY(0)";
-            currentPage = 1;
-        }
-
+        page2.style.transform = "translateY(0)";
+        page1.style.transform = "translateY(0)";
+        loadVideoToPage(page1, videos[videoIndex]);
         isAnimating = false;
+
     }, 300);
 }
 
 function scrollDown() {
-    if (isAnimating || videoIndex <= 0) return;
+    if (isAnimating) return;
+    if (videoIndex <= 0) return;
 
     pauseCurrentVideo();
-
     isAnimating = true;
     videoIndex--;
 
     const nextPage = currentPage === 1 ? page2 : page1;
-    loadVideoToPage(nextPage, videos[videoIndex]);
+    loadVideoToPagePaused(nextPage, videos[videoIndex]);
 
+    // Animate both pages moving down by 100vh
     page1.style.transition = page2.style.transition = "transform 0.3s ease";
-    page1.style.transform = page2.style.transform = `translateY(100vh)`;
+    page1.style.transform = "translateY(100vh)";
+    page2.style.transform = "translateY(100vh)";
 
     setTimeout(() => {
+        // Reset transitions and positions after animation
         page1.style.transition = page2.style.transition = "none";
-
-        if (currentPage === 1) {
-            page1.style.transform = "translateY(-100vh)";
-            page2.style.transform = "translateY(0)";
-            currentPage = 2;
-        } else {
-            page2.style.transform = "translateY(-100vh)";
-            page1.style.transform = "translateY(0)";
-            currentPage = 1;
-        }
-
+        page2.style.transform = "translateY(0)";
+        page1.style.transform = "translateY(0)";
+        loadVideoToPage(page1, videos[videoIndex]);
         isAnimating = false;
+
     }, 300);
 }
 
@@ -145,11 +164,8 @@ async function fetchVideos() {
 async function init() {
     videos = await fetchVideos();
     console.log('Fetched videos:', videos);
-    if (videos.length === 0) {
-        page1.innerHTML = '<p>No videos found</p>';
-        return;
-    }
 
+    console.log('loading:', videos);
     loadVideoToPage(page1, videos[0]);
     if (videos.length > 1) loadVideoToPage(page2, videos[1]);
 }

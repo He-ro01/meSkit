@@ -1,29 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <meta name="viewport" content="width=device-width">
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Two Page Infinite Scroll with Dummy Loaders</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 </head>
+
 <body>
-  <video id="video" controls autoplay style="max-width: 100%;"></video>
+    <div id="container">
+        <div class="page" id="page1">
+            <div class="loader"></div>
+        </div>
+        <div class="page" id="page2">
+            <div class="loader"></div>
+        </div>
+    </div>
+    <div class="overlay panel">
+        <div class="interactions-bar">
+            <div class="interaction-section user-profile">
+                <img src="profile.png" class="icon" alt="Profile" />
+                <span class="label">@username</span>
+            </div>
+            <div class="interaction-section like-button">
+                <img src="like.svg" class="icon" alt="Like" />
+                <span class="label">1.2K</span>
+            </div>
+            <div class="interaction-section comment-button">
+                <img src="comment.svg" class="icon" alt="Comment" />
+                <span class="label">347</span>
+            </div>
+            <div class="interaction-section save-button">
+                <img src="save.svg" class="icon" alt="Save" />
+                <span class="label">Save</span>
+            </div>
+        </div>
 
-  <script>
-    const video = document.getElementById('video');
-    const videoSrc = "https://zidit.s3.eu-north-1.amazonaws.com/hls/6f7e320d-8978-4bdb-ba35-69c34498c4f0/output.m3u8";
+    </div>
 
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(videoSrc);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
-      });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari supports HLS natively
-      video.src = videoSrc;
-      video.addEventListener('loadedmetadata', () => {
-        video.play();
-      });
-    } else {
-      console.error("HLS not supported in this browser.");
-    }
-  </script>
+    <script src="script.js"></script>
+
 </body>
+
+</html>

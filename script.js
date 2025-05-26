@@ -26,7 +26,7 @@ function pauseCurrentVideo() {
 function loadVideoToPage(pageElement, videoData, autoplay = true) {
     clearPageVideos(pageElement);
 
-    if (!videoData || !videoData.videoUrl) {
+    if (!videoData || !videoData.hlsUrl) {
         pageElement.innerHTML = "<p>No video available</p>";
         return;
     }
@@ -40,34 +40,48 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
     video.loop = true;
     video.playsInline = true;
     video.preload = "auto";
-    video.setAttribute("name", "media");
-
-    // Styling
     video.style.width = "100%";
     video.style.height = "auto";
     video.style.display = "block";
-
-    // Create <source> element
-    const source = document.createElement("source");
-    source.src = videoData.videoUrl;
-    source.type = "video/mp4";
-    video.appendChild(source);
-
-    // Fallback text inside <video>
-    video.append("Your browser does not support the video tag.");
-
-    // Try autoplay once video is loaded
-    video.addEventListener("loadeddata", () => {
-        video.currentTime = 0;
-        if (autoplay) {
-            video.play().catch(() => {
-                console.log("Autoplay prevented, waiting for user interaction.");
-            });
-        }
-        console.log(`Video loaded: ${videoData.videoUrl}`);
-    });
+    video.setAttribute("name", "media");
 
     pageElement.appendChild(video);
+
+    // Use HLS.js if supported, else fallback to native HLS or show error
+    if (window.Hls && Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoData.hlsUrl);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            video.currentTime = 0;
+            if (autoplay) {
+                video.play().catch(() => {
+                    console.log("Autoplay prevented, waiting for user interaction.");
+                });
+            }
+            console.log(`HLS video loaded and playing: ${videoData.hlsUrl}`);
+        });
+
+        // Store the hls instance on the video element for cleanup if needed
+        video._hlsInstance = hls;
+
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS support (Safari)
+        video.src = videoData.hlsUrl;
+        video.addEventListener("loadedmetadata", () => {
+            video.currentTime = 0;
+            if (autoplay) {
+                video.play().catch(() => {
+                    console.log("Autoplay prevented, waiting for user interaction.");
+                });
+            }
+            console.log(`Native HLS video loaded and playing: ${videoData.hlsUrl}`);
+        });
+    } else {
+        pageElement.innerHTML = "<p>HLS not supported in this browser.</p>";
+        console.error("HLS not supported in this browser.");
+    }
 }
 
 

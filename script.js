@@ -32,22 +32,35 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
     }
 
     const video = document.createElement("video");
-    video.src = videoData.videoUrl;
+
+    // Set video element attributes
     video.controls = true;
     video.autoplay = autoplay;
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
     video.preload = "auto";
-    video.style.width = "100%";
-    video.playsInline = true; // For iOS compatibility
+    video.setAttribute("name", "media");
 
-    // On loadeddata, if autoplay requested, try to play
+    // Styling
+    video.style.width = "100%";
+    video.style.height = "auto";
+    video.style.display = "block";
+
+    // Create <source> element
+    const source = document.createElement("source");
+    source.src = videoData.videoUrl;
+    source.type = "video/mp4";
+    video.appendChild(source);
+
+    // Fallback text inside <video>
+    video.append("Your browser does not support the video tag.");
+
+    // Try autoplay once video is loaded
     video.addEventListener("loadeddata", () => {
         video.currentTime = 0;
         if (autoplay) {
             video.play().catch(() => {
-                // Autoplay failed (likely on mobile), will require user gesture
                 console.log("Autoplay prevented, waiting for user interaction.");
             });
         }
@@ -56,6 +69,7 @@ function loadVideoToPage(pageElement, videoData, autoplay = true) {
 
     pageElement.appendChild(video);
 }
+
 
 function switchToPage(newPageIndex) {
     // Swap currentPage and preload videos accordingly

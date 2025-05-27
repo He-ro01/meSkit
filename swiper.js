@@ -41,7 +41,7 @@ function createSlide(index) {
 
     const videoData = fetched_videos[index];
     if (videoData) {
-        loadVideoWithHLS(video, videoData.hlsUrl);
+        loadVideoWithHLS(video, "https://d2f8yoxn7t93pq.cloudfront.net/hls/v_redd_it_c32igrq6191_DASH_1080/videos/output.m3u8");
     }
 
     videoContainer.appendChild(video);

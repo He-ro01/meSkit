@@ -2,46 +2,87 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Two Page Infinite Scroll with Dummy Loaders</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <meta charset="UTF-8" />
+  <title>Vertical Reels Swiper</title>
+  <link rel="stylesheet" href="swiperstyle.css" />
+  <link rel="stylesheet" href="userprofilestyle.css" />
+  <link rel="stylesheet" href = "style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 </head>
 
 <body>
-    <div id="container">
-        <div class="page" id="page1">
-            <div class="loader"></div>
+  <div class="main-container">
+    <div class="home">
+      <div>
+        <div class="header-bar">VIDEOS | PHOTOS</div>
+      </div>
+      <div class="swiper">
+        <div class="swiper-container" id="swiperContainer">
+          
         </div>
-        <div class="page" id="page2">
-            <div class="loader"></div>
-        </div>
+      </div>
+      <div class="bottom-bar">
+        <div><span>🏠</span></div>
+        <div><span>⛅</span></div>
+        <div><span>🔖</span></div>
+      </div>
     </div>
-    <div class="overlay panel">
-        <div class="interactions-bar">
-            <div class="interaction-section user-profile">
-                <img src="profile.png" class="icon" alt="Profile" />
-                <span class="label">@username</span>
-            </div>
-            <div class="interaction-section like-button">
-                <img src="like.svg" class="icon" alt="Like" />
-                <span class="label">1.2K</span>
-            </div>
-            <div class="interaction-section comment-button">
-                <img src="comment.svg" class="icon" alt="Comment" />
-                <span class="label">347</span>
-            </div>
-            <div class="interaction-section save-button">
-                <img src="save.svg" class="icon" alt="Save" />
-                <span class="label">Save</span>
-            </div>
+    <div class="user-profile">
+      <div class="user-profile-header">
+        <div class="user-profile-header-elements-wrapper">
+          <div class="user-profile-header-element left">
+            <span onclick="showHome()">back</span>
+          </div>
+          <div class="user-profile-header-element middle"></div>
+          <div class="user-profile-header-element right">
+            <span>Stuff</span>
+          </div>
         </div>
-
+      </div>
+      <div class="user-profile-content-wrapper">
+        <div class="profile-pic"></div>
+        <div class="username">Jane Doe</div>
+        <div class="userid">@user123</div>
+        <button class="follow-button">Follow</button>
+        <div class="description">Just a short bio about Jane. Passionate about creating.</div>
+        <a class="user-link" href="https://example.com" target="_blank" rel="noopener">https://example.com</a>
+        <div class="tabs">
+          <span>Videos</span> | <span>Photos</span>
+        </div>
+        <div class="video-grid" id="videoGrid">
+          <!-- Example thumbnails -->
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7f7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7f7fff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ffff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fffff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7fff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7f7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7f7fff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ffff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fffff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7fff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7f7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7f7fff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ffff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fffff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7fff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7f7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7f7fff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ffff7f')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/7fffff')"></div>
+          <div class="video-thumb" style="background-image: url('https://via.placeholder.com/150/ff7fff')"></div>
+          <!-- Add more as needed -->
+        </div>
+      </div>
     </div>
-
-    <script src="script.js"></script>
+  </div>
+  <script src="site.js"></script>
+  <script src="swiper.js"></script>
 
 </body>
 

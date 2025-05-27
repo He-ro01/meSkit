@@ -1,0 +1,180 @@
+.user-profile {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* use min-height so it can grow */
+    width: 100vw;
+    margin: 0 auto;
+    background: white;
+    padding: 16px 12px;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.user-profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+.user-profile-header-elements-wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.user-profile-header-element {
+    padding: 20px;
+}
+
+.user-profile-header-element .left {
+   
+}
+
+.user-profile-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    /* take all available vertical space */
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+.profile-pic {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: #ccc url('https://via.placeholder.com/100') center/cover no-repeat;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.username {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.userid {
+    font-size: 30px;
+    color: #888;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.follow-button {
+    display: none;
+    height: 120px;
+    width: 300px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 28px;
+    border: none;
+    border-radius: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background-color 0.3s ease;
+    align-self: center;
+}
+
+.follow-button:hover {
+    background-color: #0056b3;
+}
+
+.description {
+    margin-top: 30px;
+    font-size: 30px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 0 12px;
+    line-height: 1.3;
+}
+
+.user-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    display: block;
+    word-break: break-word;
+    /* wrap long URLs */
+}
+
+.tabs {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-weight: 700;
+    font-size: 50px;
+    margin-bottom: 15px;
+    user-select: none;
+}
+
+.tabs span {
+    cursor: pointer;
+}
+
+/* Video grid fills remaining space and scrolls */
+.video-grid {
+    height: 200px;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    overflow-y: auto;
+    width: 100%;
+
+}
+
+/* Video thumbs square and clickable */
+.video-thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #ddd;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Scrollbar styling for modern browsers */
+.video-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.video-grid::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 400px) {
+    .profile-pic {
+        width: 70px;
+        height: 70px;
+    }
+
+    .username {
+        font-size: 18px;
+    }
+
+    .follow-button {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+
+    .tabs {
+        gap: 12px;
+        font-size: 14px;
+    }
+}

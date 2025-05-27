@@ -1,0 +1,138 @@
+
+/* Main container */
+.home {
+    width: 100vw;
+    height: 100%;
+ 
+}
+
+/* Swiper setup */
+.swiper-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+.swiper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding-bottom: 100px;
+}
+
+/* Each slide fills screen */
+.swiper-slide {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    color: white;
+    will-change: transform;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.visible {
+    z-index: 10;
+}
+
+.profile-icon {
+    width: 150px;
+    height: 150px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    margin-bottom: 30px;
+    border: 2px solid white;
+}
+
+/* Bottom bar stays fixed */
+.bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 100px;
+    background: rgb(30, 30, 30);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 3em;
+    z-index: 20;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+.bottom-bar div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.8em;
+}
+
+.bottom-bar div span:first-child {
+    font-size: 1.5em;
+}
+
+/* Side panel */
+.slide-panel {
+    position: absolute;
+    bottom: 150px; /* 100px bottom bar + 50px spacing */
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    gap: 16px;
+    z-index: 30;
+    pointer-events: auto;
+}
+
+.slide-panel div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.85em;
+}
+
+.slide-panel div span:first-child {
+    font-size: 2em;
+    line-height: 1;
+}
+
+.slide-panel div span:last-child {
+    font-size: 0.85em;
+    margin-top: 4px;
+}
+
+/* Header bar */
+.header-bar {
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    padding: 40px 20px;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), transparent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    font-weight: bold;
+    color: white;
+    z-index: 25;
+    letter-spacing: 1px;
+}
+
+/* Navigation buttons */
+.next,
+.previous {
+    z-index: 5;
+}

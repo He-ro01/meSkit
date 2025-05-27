@@ -1,22 +1,21 @@
 const container = document.getElementById("swiperContainer");
-
-// Global state
 let slides = [];
 let currentIndex = 0;
 let previousCount = 0;
 let startY = 0;
 let deltaY = 0;
 let isDragging = false;
+let maxFetchedIndex = 0;
+let fetched_videos = [];
+let slide_objects = [];
 
-// Video data
-let fetched_videos = [];      // Prefetched video data
-let maxFetchedIndex = -1;     // Track how many we've fetched
+// Prefetch 3 videos initially
+for (let i = 0; i < 3; i++) fetchVideo();
 
-// Utility to get a random background color for testing
+// Utility
 const getRandomColor = () =>
     `hsl(${Math.floor(Math.random() * 360)}, 70%, 40%)`;
 
-// Create a slide with a unique ID
 function createSlide(text, id) {
     const slide = document.createElement("div");
     slide.className = "swiper-slide";
@@ -25,7 +24,6 @@ function createSlide(text, id) {
     slide.style.background = getRandomColor();
     slide.style.transform = "translateY(100%)";
 
-    // Create UI panel
     const panel = document.createElement("div");
     panel.className = "slide-panel";
     panel.innerHTML = `
@@ -33,50 +31,34 @@ function createSlide(text, id) {
         <div><span>👍</span><span>${Math.floor(Math.random() * 1000)}</span></div>
         <div><span>💬</span><span>${Math.floor(Math.random() * 500)}</span></div>
         <div><span>👁️</span><span>${Math.floor(Math.random() * 5000)}</span></div>
-      `;
+    `;
     slide.appendChild(panel);
+
+    const videoIndex = currentIndex + slides.length - 1;
+    if (slide_objects[videoIndex] && slide_objects[videoIndex].hlsUrl) {
+        const video = document.createElement("video");
+        video.controls = false;
+        video.autoplay = false;
+        video.loop = true;
+        video.muted = true;
+        video.style.width = "100%";
+        video.style.height = "100%";
+        video.style.objectFit = "cover";
+        video.src = slide_objects[videoIndex].hlsUrl;
+        slide.appendChild(video);
+
+        // autoplay if this is the current slide
+        if (slides.length === 1) {
+            video.play();
+        }
+    }
+
     container.appendChild(slide);
     return slide;
 }
 
-// Attach a video to a slide using HLS.js
-function attachVideoToSlide(slide, hlsUrl, shouldAutoplay = false) {
-    if (slide.querySelector("video")) return; // Already added
-
-    const video = document.createElement("video");
-    video.controls = false;
-    video.playsInline = true;
-    video.autoplay = shouldAutoplay;
-    video.muted = true;
-
-    // Load via HLS.js
-    if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(hlsUrl);
-        hls.attachMedia(video);
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = hlsUrl;
-    }
-
-    slide.appendChild(video);
-}
-
-// Load and play video only for the current visible slide
-function onSlideReached() {
-    slides.forEach((slide, i) => {
-        const video = slide.querySelector("video");
-        if (!video) return;
-        if (i === 1) {
-            video.play().catch(() => { });
-        } else {
-            video.pause();
-        }
-    });
-}
-
-// Main function to update slides based on swipe direction
 function updateSlides(direction) {
-    slides.forEach((slide) => (slide.style.transition = "none"));
+    slides.forEach(slide => slide.style.transition = "none");
 
     if (direction === "up") {
         const oldPrevious = slides[0];
@@ -90,6 +72,7 @@ function updateSlides(direction) {
 
         slides = [slides[1], newVisible, newNext];
         oldPrevious.remove();
+
     } else if (direction === "down" && currentIndex > 0) {
         const oldNext = slides[2];
         const newPrevious = createSlide(`Index ${--currentIndex - 1}`, `slide-${Date.now()}`);
@@ -103,76 +86,51 @@ function updateSlides(direction) {
         oldNext.remove();
     }
 
-    // Always prefetch 3 videos ahead
-    while (fetched_videos.length < currentIndex + 3) {
-        fetchVideo();
-    }
-
-    // Attach videos if available
-    slides.forEach((slide, i) => {
-        const index = currentIndex - 1 + i;
-        const videoData = fetched_videos[index];
-        if (videoData) {
-            attachVideoToSlide(slide, videoData.hlsUrl, i === 1);
-        }
-    });
-
+    prefetchVideoBuffer(currentIndex + 2);
     resetSlidePositions(0);
     onSlideReached();
 }
 
-// Drag slide manually based on offset percentage
-function dragSlide(offsetPercent) {
-    slides.forEach((slide) => (slide.style.transition = "none"));
-    slides[0].style.transform = `translateY(${offsetPercent - 100}%)`;
-    slides[1].style.transform = `translateY(${offsetPercent}%)`;
-    slides[2].style.transform = `translateY(${offsetPercent + 100}%)`;
+function onSlideReached() {
+    const video = slides[1].querySelector("video");
+    if (video) {
+        video.play();
+    }
 }
 
-// Animate back to a fixed slide position
 function resetSlidePositions(offsetPercent = 0) {
-    slides.forEach((slide) => (slide.style.transition = "transform 0.3s ease"));
-    slides[0].style.transform = `translateY(${offsetPercent - 100}%)`;
-    slides[1].style.transform = `translateY(${offsetPercent}%)`;
-    slides[2].style.transform = `translateY(${offsetPercent + 100}%)`;
+    slides.forEach((slide, index) => {
+        slide.style.transition = "transform 0.3s ease";
+        slide.style.transform = `translateY(${offsetPercent + (index - 1) * 100}%)`;
+    });
 }
 
-// Fetch a video and store in memory
 async function fetchVideo() {
     try {
         const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
         const videoData = await res.json();
-        fetched_videos.push(videoData);
+        slide_objects.push(videoData);
         maxFetchedIndex++;
     } catch (error) {
-        console.error("Failed to fetch video:", error, " retrying...");
-        fetchVideo(); // retry on failure
+        console.error("Failed to fetch video:", error, " retrying");
+        setTimeout(fetchVideo, 1000);
     }
 }
 
-// Init first 3 slides and videos
-async function init() {
-    for (let i = 0; i < 3; i++) {
-        const slide = createSlide(`Index ${i}`, `slide-${i}`);
-        slides.push(slide);
-        if (fetched_videos.length <= i) await fetchVideo();
+function prefetchVideoBuffer(targetIndex) {
+    while (slide_objects.length <= targetIndex + 1) {
+        fetchVideo();
     }
+}
 
-    // Apply video to initial slides
-    slides.forEach((slide, i) => {
-        const videoData = fetched_videos[i];
-        if (videoData) attachVideoToSlide(slide, videoData.hlsUrl, i === 1);
+function dragSlide(offsetPercent) {
+    slides.forEach((slide, index) => {
+        slide.style.transition = "none";
+        slide.style.transform = `translateY(${offsetPercent + (index - 1) * 100}%)`;
     });
-
-    slides[0].className = "swiper-slide previous";
-    slides[1].className = "swiper-slide visible";
-    slides[2].className = "swiper-slide next";
-
-    resetSlidePositions();
-    onSlideReached();
 }
 
-// Handle touch gestures
+// Touch Events
 container.addEventListener("touchstart", (e) => {
     startY = e.touches[0].clientY;
     isDragging = true;
@@ -205,11 +163,3 @@ container.addEventListener("touchend", () => {
 
     deltaY = 0;
 });
-
-// Start it up
-init();
-
-// Stub for profile click
-function showUserProfile() {
-    alert("User profile clicked.");
-}

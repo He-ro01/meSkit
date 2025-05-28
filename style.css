@@ -11,7 +11,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto';
     /* Always put quotes around font names with spaces */
     font-weight: 400;
     font-variant-numeric: tabular-nums;

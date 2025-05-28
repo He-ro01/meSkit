@@ -17,7 +17,7 @@ const getRandomColor = () =>
 function createSlide(index) {
     slide_objects.push({
         index: index,
-        description: `${index}hhhhhhhhhh hhhhhhhhhhhhhh  hhhhhhhhhh hhhhhhhhhh hhhhhhhhhhhh`
+        description: `${index}Whereas recognition of the inherent dignity, Whereas recognition of the inherent dignity, Whereas recognition of the inherent dignity, Whereas recognition of the inherent dignity`
     });
 
     const slide = document.createElement("div");
@@ -43,7 +43,7 @@ function createSlide(index) {
             <span>John Doe</span>
         </div>
         <div class = "description-container">
-            <span id = "description" style = "width: 100%;height: 100%;font-size: 40px;font-weight: lighter;letter-spacing: 2px;display: flex; align-items: flex-end;  ">
+            <span id = "description" style = "width: 100%;height: 100%;font-size: 35px;font-weight: lighter;letter-spacing: 2px;display: flex; align-items: flex-end;  ">
                 ${getSlideObjectByIndex(index).description.slice(0, 40) + "..."}
             </span >
             <div class="description-options-container">
@@ -262,7 +262,7 @@ function toggleDescription(toggleBtn) {
     textSpan.style = `
   width: 100%;
   height: 100%;
-  font-size: 40px;
+  font-size: 35px;
   font-weight: lighter;
   letter-spacing: 2px;
   display: flex;

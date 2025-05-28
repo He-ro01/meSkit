@@ -195,7 +195,7 @@ video {
 
 .name-description #description {
     width: 100%;
-    font-size: 40px;
+    font-size: 30px;
     font-weight: lighter;
     letter-spacing: 2px;
 }
@@ -221,7 +221,7 @@ video {
 .name-description .name-container {
     font-weight: bold;
     width: 100%;
-    font-size: 60px;
+    font-size: 50px;
 }
 
 .name-description .description-container {

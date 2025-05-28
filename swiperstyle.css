@@ -30,7 +30,7 @@
 
 .swiper {
     width: 100%;
-    height: calc(var(--vh, 1vh) * 100 - 7vh - env(safe-area-inset-bottom));
+    height: calc(var(--vh, 1vh) * 100 - 6vh - env(safe-area-inset-bottom));
 }
 
 
@@ -39,7 +39,7 @@
     bottom: 0;
     left: 0;
     width: 100vw;
-    height: 7vh;
+    height: 6vh;
     padding-bottom: env(safe-area-inset-bottom);
     padding-top: 10px;
     background: rgb(0, 0, 0);

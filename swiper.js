@@ -91,9 +91,7 @@ function loadVideoIntoSlide(slide, videoData) {
 }
 
 
-function loadVideoWithHLS(videoEl, url2) {
-
-    url = "https://d2f8yoxn7t93pq.cloudfront.net/Achilles+vs.+Testicles%E2%80%A6+Who%E2%80%99s+More+Vulnerable.+%F0%9F%92%80+%23familyguy+%23shorts.mp4";
+function loadVideoWithHLS(videoEl, url) {
     if (Hls.isSupported()) {
         const hls = new Hls();
         hls.loadSource(url);

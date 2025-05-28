@@ -161,7 +161,7 @@ video {
 
 .bottom-left {
     position: absolute;
-    bottom: 100px;
+    bottom: 40px;
     left: 2vw;
     z-index: 30;
     display: flex;
@@ -174,7 +174,7 @@ video {
 
 .name-description {
     left: 1vh;
-    bottom: 1vh;
+    bottom: 0.1vh;
     position: absolute;
     width: 70%;
     display: flex;

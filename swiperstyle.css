@@ -30,11 +30,8 @@
 .swiper {
     width: 100%;
     height: 100vh;
-    padding-bottom: 120px;
-    /* or whatever your bottom bar height is */
-    box-sizing: border-box;
+    padding-bottom: calc(120px + env(safe-area-inset-bottom)*10);
 }
-
 
 .swiper-slide {
     width: 100%;

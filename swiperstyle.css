@@ -127,7 +127,7 @@ video {
 /* Side panel */
 .slide-panel {
     position: absolute;
-    bottom: 70px;
+    bottom: 75px;
     right: 2vw;
     display: flex;
     flex-direction: column;

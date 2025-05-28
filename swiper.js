@@ -10,11 +10,16 @@ let startY = 0;
 let deltaY = 0;
 let isDragging = false;
 let fetched_videos = [];
-let video_objects = [];
+let slide_objects = [{}];
 const getRandomColor = () =>
     `hsl(${Math.floor(Math.random() * 360)}, 70%, 40%)`;
 
 function createSlide(index) {
+    slide_objects.push({
+        index: index,
+        description: `${index}hhhhhhhhhh hhhhhhhhhhhhhh  hhhhhhhhhh hhhhhhhhhh hhhhhhhhhhhh`
+    });
+
     const slide = document.createElement("div");
     slide.className = "swiper-slide";
     slide.id = `slide-${index}`;
@@ -29,7 +34,7 @@ function createSlide(index) {
         <div class = "profile-icon" onclick="showUserProfile()">👤</div>
         <i class="fi fi-rr-eye icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rr-heart icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rr-bookmark icon"></i>
+        <i class="fi fi-rr-bookmark icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rr-circle-ellipsis icon"></i>
     </div>
     <div class = "bottom-left">
@@ -38,19 +43,29 @@ function createSlide(index) {
             <span>John Doe</span>
         </div>
         <div class = "description-container">
-            <span id = "description">
-                Lorem, ipsum, long something something then the quick brown fox jumped over the lazy dog #quick #brown # fox
-            </span>
-        </div>
-    </div>
-    </div>
-     
+            <span id = "description" style = "width: 100%;height: 100%;font-size: 40px;font-weight: lighter;letter-spacing: 2px;display: flex; align-items: flex-end;  ">
+                ${getSlideObjectByIndex(index).description.slice(0, 40) + "..."}
+            </span >
+            <div class="description-options-container">
+                <span id="description-length-toggle" onclick="toggleDescription(this)" >
+                    more
+                </span>
+            </div>
+        </div >
+        
+    </div >
+    </div >
+
     `;
 
     slide.appendChild(panel);
     container.appendChild(slide);
     return slide;
 }
+function getSlideObjectByIndex(index) {
+    return slide_objects.find(obj => obj.index === index) || null;
+}
+
 function loadVideoIntoSlide(slide, videoData) {
     if (slide.querySelector("video")) {
         // Video already loaded, skip loading again
@@ -63,7 +78,7 @@ function loadVideoIntoSlide(slide, videoData) {
     const video = document.createElement("video");
     video.setAttribute("playsinline", "");
     video.setAttribute("muted", "");
-    video.setAttribute("controls", "");
+    video.controls = false;
     video.style.width = "100%";
     video.style.height = "100%";
 
@@ -76,13 +91,24 @@ function loadVideoIntoSlide(slide, videoData) {
 }
 
 
-function loadVideoWithHLS(videoEl, url) {
+function loadVideoWithHLS(videoEl, url2) {
+
+    url = "https://d2f8yoxn7t93pq.cloudfront.net/Achilles+vs.+Testicles%E2%80%A6+Who%E2%80%99s+More+Vulnerable.+%F0%9F%92%80+%23familyguy+%23shorts.mp4";
     if (Hls.isSupported()) {
         const hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(videoEl);
     } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
         videoEl.src = url;
+    }
+}
+function removeSlideObjectByIndex(indexToRemove) {
+    const i = slide_objects.findIndex(obj => obj.index === indexToRemove);
+    if (i !== -1) {
+        slide_objects.splice(i, 1);
+        console.log(`Removed object with index ${indexToRemove} `);
+    } else {
+        console.warn(`No object found with index ${indexToRemove} `);
     }
 }
 
@@ -136,6 +162,7 @@ async function updateSlides(direction) {
         }
 
         const oldPrevious = slides[0];
+        removeSlideObjectByIndex(currentIndex - 2);
         const newVisible = slides[2];
         const newNext = createSlide(currentIndex + 1);
         newNext.className += " next";
@@ -155,6 +182,7 @@ async function updateSlides(direction) {
         currentIndex--;
 
         const oldNext = slides[2];
+        removeSlideObjectByIndex(currentIndex + 2);
         const newPrevious = createSlide(currentIndex - 1);
         newPrevious.className += " previous";
         newPrevious.style.transform = "translateY(-100%)";
@@ -163,6 +191,7 @@ async function updateSlides(direction) {
         slides[0].className = "swiper-slide visible";
 
         slides = [newPrevious, slides[0], slides[1]];
+
         oldNext.remove();
     }
 
@@ -193,6 +222,55 @@ function resetSlidePositions(offsetPercent = 0) {
         slide.style.transform = `translateY(${offsetPercent + (i - 1) * 100}%)`;
     });
 }
+function toggleDescription(toggleBtn) {
+
+
+    const descriptionContainer = toggleBtn.closest(".description-container");
+    const textSpan = descriptionContainer.querySelector("#description");
+    const slide = toggleBtn.closest(".swiper-slide");
+
+    if (!slide || !slide.id) {
+        console.warn("Slide or slide ID not found");
+        return;
+    }
+
+    // Extract index from ID like "slide-3"
+    const slideIdMatch = slide.id.match(/slide-(\d+)/);
+    if (!slideIdMatch) {
+        console.warn("Slide ID format invalid:", slide.id);
+        return;
+    }
+
+    const slideIndex = parseInt(slideIdMatch[1], 10);
+    console.log(slideIndex);
+    description = getSlideObjectByIndex(slideIndex).description;
+    console.log(description);
+    const videoData = fetched_videos[slideIndex];
+
+
+    const isExpanded = toggleBtn.textContent.trim().toLowerCase() === "less";
+
+    if (isExpanded) {
+        // Collapse
+        textSpan.textContent = description.slice(0, 40) + "...";
+        toggleBtn.textContent = "more";
+    } else {
+        // Expand
+        textSpan.textContent = description;
+        toggleBtn.textContent = "less";
+    }
+    textSpan.style = `
+  width: 100%;
+  height: 100%;
+  font-size: 40px;
+  font-weight: lighter;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: flex-end;     /* Aligns text vertically to the bottom */
+  justify-content: flex-start; /* Aligns text horizontally to the left */
+`;
+}
+
 
 function dragSlide(offsetPercent) {
     slides.forEach((slide, i) => {
@@ -263,15 +341,7 @@ async function myLoop() {
 
 async function loadURL() {
     try {
-        const res = await fetch("https://meskit-backend.onrender.com/fetch-video", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                exclude_ids: fetchedVideoIds(), // 👈 this tells your API to exclude duplicates
-            }),
-        });
+        const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
 
         const videoData = await res.json();
         return videoData;

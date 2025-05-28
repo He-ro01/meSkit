@@ -16,9 +16,12 @@ body {
     font-weight: 400;
     font-variant-numeric: tabular-nums;
     /* This sets the font weight to Regular */
-    overscroll-behavior-y: none;
-    /* Prevents pull-to-refresh */
-    overflow-y: auto;
+    
+   
+    overscroll-behavior: none;
+    /* Prevent scroll chaining and pull-to-refresh */
+    /* Optional: disables scrolling entirely */
+    touch-action: none;
 
 }
 

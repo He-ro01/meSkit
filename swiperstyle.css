@@ -33,8 +33,8 @@
 .swiper {
     width: 100%;
     height: 100%;
-    position: relative;
-    padding-bottom: 150px;
+  
+    padding-bottom: 120px;
 }
 
 /* Each slide fills screen */
@@ -97,7 +97,7 @@ video {
     bottom: 0;
     left: 0;
     width: 100vw;
-    height: 150px;
+    height: 120px;
     background: rgb(0, 0, 0);
     display: flex;
     justify-content: space-around;

@@ -18,7 +18,7 @@ function createSlide(index) {
     const slide = document.createElement("div");
     slide.className = "swiper-slide";
     slide.id = `slide-${index}`;
-    slide.style.background = getRandomColor();
+    // slide.style.background = getRandomColor();
     slide.style.transform = "translateY(100%)";
 
     // Slide panel
@@ -48,8 +48,16 @@ function loadVideoIntoSlide(slide, videoData) {
     video.setAttribute("playsinline", "");
     video.setAttribute("muted", "");
     video.setAttribute("controls", "");
-    video.style.width = "100%";
-    video.style.height = "100%";
+    //
+    video.style.maxWidth = "100%";
+    video.style.maxHeight = "100%";
+    video.style.position = "relative";
+    video.style.objectFit = "cover";
+
+    video.addEventListener("loadedmetadata", () => {
+        resizeVideoToFitContainer(video);
+    });
+
 
     if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0) {
         loadVideoWithHLS(video, videoData.hlsUrl);
@@ -109,6 +117,37 @@ function controlVideoPlayback() {
         }
     });
 }
+function resizeVideoToFitContainer(videoEl) {
+    const container = videoEl.parentElement;
+
+    // Get actual dimensions
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+
+    const videoWidth = videoEl.videoWidth;
+    const videoHeight = videoEl.videoHeight;
+
+    if (!videoWidth || !videoHeight) return; // Video metadata not loaded yet
+
+    // Try fitting by width
+    const widthScaledHeight = (videoHeight / videoWidth) * containerWidth;
+
+    if (widthScaledHeight >= containerHeight) {
+        // Good: Fills vertically when width is 100%
+        videoEl.style.width = "100%";
+        videoEl.style.height = "auto";
+        videoEl.style.objectFit = "cover";
+    } else {
+        // Not enough height: switch to fit by height
+        videoEl.style.height = "100%";
+        videoEl.style.width = "auto";
+        videoEl.style.objectFit = "cover";
+    }
+
+    // Center it
+    videoEl.style.display = "block";
+    videoEl.style.margin = "0 auto";
+}
 
 async function updateSlides(direction) {
     slides.forEach(slide => (slide.style.transition = "none"));
@@ -152,7 +191,16 @@ async function updateSlides(direction) {
 
 
     // Load video if data already fetched
+    const previousVideoData = fetched_videos[currentIndex - 1];
     const videoData = fetched_videos[currentIndex];
+    const nextVideoData = fetched_videos[currentIndex + 1];
+    if (previousVideoData && Object.keys(previousVideoData).length !== 0) {
+        loadVideoIntoSlide(slides[0], previousVideoData);
+    }
+    if (nextVideoData && Object.keys(nextVideoData).length !== 0) {
+        loadVideoIntoSlide(slides[2], nextVideoData);
+    }
+
     if (videoData && Object.keys(videoData).length !== 0) {
         loadVideoIntoSlide(slides[1], videoData);
     }

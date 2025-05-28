@@ -51,6 +51,16 @@
     color: white;
 }
 
+.bottom-bar i {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 70px;
+    text-align: center;
+}
+
 .swiper-slide {
     width: 100%;
     height: 100%;
@@ -127,16 +137,73 @@ video {
 /* Side panel */
 .slide-panel {
     position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.interactions-icon-text {
+    font-size: 10px;
+}
+
+.bottom-right {
+    position: absolute;
     bottom: 100px;
     right: 2vw;
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: start;
     color: white;
     gap: 100px;
     z-index: 30;
     pointer-events: auto;
 }
+
+.bottom-left {
+    position: absolute;
+    bottom: 100px;
+    left: 2vw;
+    z-index: 30;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100vw;
+    /* Or a fixed width like 300px if needed */
+    text-align: start;
+}
+
+.name-description {
+    left: 1vh;
+    bottom: 1vh;
+    position: absolute;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.name-description span {
+    width: 100%;
+    letter-spacing: 2px;
+    /* or try 0.1em */
+
+}
+
+.name-description .name-container {
+    font-weight: bold;
+    width: 100%;
+    font-size: 50px;
+}
+
+.name-description .description-container {
+
+    width: 100%;
+    font-size: 40px;
+}
+
+
+
 
 .metered {
     margin-bottom: 30px;

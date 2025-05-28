@@ -25,12 +25,25 @@ function createSlide(index) {
     const panel = document.createElement("div");
     panel.className = "slide-panel";
     panel.innerHTML = `
-        <div class="profile-icon" onclick="showUserProfile()">👤</div>
-        
-        <i class="fi fi-rr-eye icon metered"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rr-heart icon metered"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rr-bookmark icon"><span class = "icon-text"></i>
+    <div class = "bottom-right ">
+        <div class = "profile-icon" onclick="showUserProfile()">👤</div>
+        <i class="fi fi-rr-eye icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rr-heart icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rr-bookmark icon"></i>
         <i class="fi fi-rr-circle-ellipsis icon"></i>
+    </div>
+    <div class = "bottom-left">
+    <div class = "name-description">
+        <div class = "name-container">
+            <span>John Doe</span>
+        </div>
+        <div class = "description-container">
+            <span id = "description">
+                Lorem, ipsum, long something something then the quick brown fox jumped over the lazy dog #quick #brown # fox
+            </span>
+        </div>
+    </div>
+    </div>
      
     `;
 

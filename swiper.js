@@ -3,12 +3,11 @@ let slides = [];
 let currentIndex = 0;
 let fetchedVideoIndex = 0;
 let maxFetchedIndex = -1;
-let previousCount = 0;
 let startY = 0;
 let deltaY = 0;
 let isDragging = false;
 let fetched_videos = [];
-let video_objects = [];
+
 const getRandomColor = () =>
     `hsl(${Math.floor(Math.random() * 360)}, 70%, 40%)`;
 
@@ -19,7 +18,6 @@ function createSlide(index) {
     slide.style.background = getRandomColor();
     slide.style.transform = "translateY(100%)";
 
-    // Slide panel
     const panel = document.createElement("div");
     panel.className = "slide-panel";
     panel.innerHTML = `
@@ -33,8 +31,8 @@ function createSlide(index) {
     container.appendChild(slide);
     return slide;
 }
+
 function loadVideoIntoSlide(slide, videoData) {
-    // Video container
     const videoContainer = document.createElement("div");
     videoContainer.className = "video-container";
 
@@ -51,7 +49,6 @@ function loadVideoIntoSlide(slide, videoData) {
 
     videoContainer.appendChild(video);
     slide.appendChild(videoContainer);
-    container.appendChild(slide);
 }
 
 function loadVideoWithHLS(videoEl, url) {
@@ -66,29 +63,31 @@ function loadVideoWithHLS(videoEl, url) {
 
 async function fetchVideo() {
     fetched_videos.push({});
+    maxFetchedIndex = fetched_videos.length - 1;
 }
 
 async function prefetchVideos(count = 5) {
     for (let i = 0; i < count; i++) {
         fetched_videos.push({});
     }
+    maxFetchedIndex = fetched_videos.length - 1;
 }
 
 async function initializeSlides() {
     await prefetchVideos(5);
+
     const previous = createSlide(currentIndex - 1);
     const visible = createSlide(currentIndex);
     const next = createSlide(currentIndex + 1);
 
-    previous.className += " previous";
-    visible.className += " visible";
-    next.className += " next";
+    previous.classList.add("previous");
+    visible.classList.add("visible");
+    next.classList.add("next");
 
     slides = [previous, visible, next];
+
     resetSlidePositions();
-    videoData = fetched_videos[0];
-    if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0)
-        controlVideoPlayback();
+    controlVideoPlayback();
 }
 
 function controlVideoPlayback() {
@@ -104,19 +103,19 @@ function controlVideoPlayback() {
 }
 
 async function updateSlides(direction) {
-
     slides.forEach(slide => (slide.style.transition = "none"));
 
     if (direction === "up") {
         currentIndex++;
-        if (currentIndex + 1 > maxFetchedIndex) {
+
+        if (currentIndex > maxFetchedIndex) {
             await fetchVideo();
         }
 
         const oldPrevious = slides[0];
         const newVisible = slides[2];
         const newNext = createSlide(currentIndex + 1);
-        newNext.className += " next";
+        newNext.classList.add("next");
 
         slides[1].className = "swiper-slide previous";
         newVisible.className = "swiper-slide visible";
@@ -124,14 +123,14 @@ async function updateSlides(direction) {
         slides = [slides[1], newVisible, newNext];
         oldPrevious.remove();
 
-        if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0)
-            loadVideoIntoSlide(fetched_videos[currentIndex], slides[0]);
+        loadVideoIntoSlide(slides[2], fetched_videos[currentIndex + 1]);
+
     } else if (direction === "down" && currentIndex > 0) {
         currentIndex--;
 
         const oldNext = slides[2];
         const newPrevious = createSlide(currentIndex - 1);
-        newPrevious.className += " previous";
+        newPrevious.classList.add("previous");
         newPrevious.style.transform = "translateY(-100%)";
 
         slides[1].className = "swiper-slide next";
@@ -139,13 +138,12 @@ async function updateSlides(direction) {
 
         slides = [newPrevious, slides[0], slides[1]];
         oldNext.remove();
-        if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0)
-            loadVideoIntoSlide(fetched_videos[currentIndex], slides[0]);
+
+        loadVideoIntoSlide(slides[0], fetched_videos[currentIndex - 1]);
     }
-    console.log(currentIndex);
+
     resetSlidePositions();
-    if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0)
-        controlVideoPlayback();
+    controlVideoPlayback();
 }
 
 function resetSlidePositions(offsetPercent = 0) {
@@ -194,47 +192,37 @@ container.addEventListener("touchend", () => {
 
     deltaY = 0;
 });
-let loading_vid = false;
 
 async function myLoop() {
     for (let i = 0; i < fetched_videos.length; i++) {
         let video = fetched_videos[i];
-        // Check if object is empty
         if (video && Object.keys(video).length === 0) {
-            console.log("Loading video for index:");
-            let newVideo = await loadURL();
-
+            const newVideo = await loadURL();
             if (newVideo) {
-                console.log(currentIndex, fetchedVideoIndex);
-                if (fetchedVideoIndex == currentIndex - 1 && currentIndex > 0) {
-                    loadVideoIntoSlide(slides[0], newVideo);
-                }
-                if (fetchedVideoIndex == currentIndex) {
-                    loadVideoIntoSlide(slides[1], newVideo);
-                }
-                if (fetchedVideoIndex == currentIndex + 1) {
-                    loadVideoIntoSlide(slides[2], newVideo);
-                }
+                fetched_videos[i] = newVideo;
+
+                if (i === currentIndex - 1) loadVideoIntoSlide(slides[0], newVideo);
+                if (i === currentIndex) loadVideoIntoSlide(slides[1], newVideo);
+                if (i === currentIndex + 1) loadVideoIntoSlide(slides[2], newVideo);
+
+                fetchedVideoIndex++;
             }
-            fetchedVideoIndex++;
         }
     }
 
-    requestAnimationFrame(myLoop); // Schedule next frame
+    requestAnimationFrame(myLoop);
 }
 
 async function loadURL() {
     try {
         const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
         const videoData = await res.json();
-        return videoData; // not "res videoData;" — that was invalid syntax
+        return videoData;
     } catch (error) {
-        await loadURL();
-        console.error("Failed to fetch video:", error, " retrying...");
-        return null;
+        console.warn("Fetch failed, retrying...");
+        return await loadURL();
     }
 }
-myLoop(); // Start the loop
 
-// 🔥 Start when DOM is ready
+myLoop();
 window.addEventListener("DOMContentLoaded", initializeSlides);

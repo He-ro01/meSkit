@@ -29,9 +29,25 @@
 
 .swiper {
     width: 100%;
-    height: calc((95vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+    height: calc(100vh - 5vh - env(safe-area-inset-bottom));
 }
 
+.bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 5vh;
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: 10px;
+    background: rgb(0, 0, 0);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: clamp(1em, 5vw, 3em);
+    z-index: 20;
+    color: white;
+}
 
 .swiper-slide {
     width: 100%;
@@ -85,23 +101,7 @@ video {
     border: 2px solid white;
 }
 
-/* Bottom bar stays fixed */
-.bottom-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    height: 5vh;
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-top: 10px;
-    background: rgb(0, 0, 0);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    font-size: clamp(1em, 5vw, 3em);
-    z-index: 20;
-    color: white;
-}
+
 
 .bottom-bar .icon {
     font-size: 50px;

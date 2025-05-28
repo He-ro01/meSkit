@@ -21,13 +21,15 @@ body {
 
 i {
     display: flex;
-    gap: 20px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 20px;
     font-size: 70px;
     text-align: center;
+    text-shadow: 12px 12px 15px rgba(0, 0, 0, 0.493);
 }
+
 
 .icon-text {
     font-size: 35px;

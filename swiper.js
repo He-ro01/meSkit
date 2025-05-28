@@ -26,9 +26,11 @@ function createSlide(index) {
     panel.className = "slide-panel";
     panel.innerHTML = `
         <div class="profile-icon" onclick="showUserProfile()">👤</div>
-        <div><span>👍</span><span>${Math.floor(Math.random() * 1000)}</span></div>
-        <div><span>💬</span><span>${Math.floor(Math.random() * 500)}</span></div>
-        <div><span>👁️</span><span>${Math.floor(Math.random() * 5000)}</span></div>
+        <i class="fi fi-rr-eye icon"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rr-heart icon"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rr-bookmark icon"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rr-circle-ellipsis icon"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
+     
     `;
 
     slide.appendChild(panel);

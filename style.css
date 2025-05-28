@@ -12,10 +12,39 @@ body {
     font-family: sans-serif;
 }
 
+i {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 70px;
+    text-align: center;
+}
+
+.icon-text {
+    font-size: 30px;
+}
+
 .main-container {
     display: flex;
     width: 200vw;
     /* Two screens side-by-side */
     height: 100vh;
     transition: transform 0.2s ease-in-out;
+}
+
+.tabs {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-weight: 700;
+    font-size: 50px;
+    margin-bottom: 15px;
+    user-select: none;
+}
+
+.tabs span {
+    cursor: pointer;
 }

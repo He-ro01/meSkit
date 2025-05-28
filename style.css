@@ -16,6 +16,10 @@ body {
     font-weight: 400;
     font-variant-numeric: tabular-nums;
     /* This sets the font weight to Regular */
+    overscroll-behavior-y: contain;
+    /* Prevents pull-to-refresh */
+    overflow-y: auto;
+
 }
 
 
@@ -27,7 +31,7 @@ i {
     gap: 20px;
     font-size: 70px;
     text-align: center;
-    text-shadow: 2px 2px 5px rgb(0, 0, 0);
+    text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.642);
 }
 
 

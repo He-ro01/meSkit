@@ -263,15 +263,24 @@ async function myLoop() {
 
 async function loadURL() {
     try {
-        const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
+        const res = await fetch("https://meskit-backend.onrender.com/fetch-video", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                exclude_ids: fetchedVideoIds(), // 👈 this tells your API to exclude duplicates
+            }),
+        });
+
         const videoData = await res.json();
-        return videoData; // not "res videoData;" — that was invalid syntax
+        return videoData;
     } catch (error) {
-        retry = await loadURL();
-        //  console.error("Failed to fetch video:", error, " retrying...");
-        return retry;
+        console.warn("Retrying after error:", error);
+        return await loadURL(); // retry
     }
 }
+
 myLoop(); // Start the loop
 
 // 🔥 Start when DOM is ready

@@ -352,7 +352,7 @@ async function myLoop() {
 async function loadURL() {
     try {
         // 1. Get video URL from backend
-        const res = await fetch("https://smeSkit-backend.onrender.com/fetch-video");
+        const res = await fetch("https://meSkit-backend.onrender.com/fetch-video");
         const videoData = await res.json();
 
         console.log("Original video URL from DB:", videoData.videoUrl);

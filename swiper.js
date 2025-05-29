@@ -38,25 +38,21 @@ function createSlide(index) {
         <i class="fi fi-rr-circle-ellipsis icon"></i>
     </div>
     <div class = "bottom-left">
-    <div class = "name-description">
-        <div class = "name-container">
-            <span>John Doe</span>
-        </div>
-        <div class = "description-container">
-            <span id = "description" style = "width: relative;height: 100%;font-size: 35px;font-weight: lighter;letter-spacing: 2px;display: flex; align-items: flex-end;  ">
-                ${getSlideObjectByIndex(index).description.slice(0, 55) + "......"}
-            </span >
-            <div class="description-options-container">
-                <span id="description-length-toggle" onclick="toggleDescription(this)" >
-                    more
-                </span>
+        <div class = "name-description">
+            <div class = "name-container">
+                <span>John Doe</span>
             </div>
+            <div class = "description-container">
+                <span class = "description-text text" >
+                    ${getSlideObjectByIndex(index).description.slice(0, 55) + "......"}
+                     <span class = "description-text toggle" onclick="toggleDescription(this)" >
+                    show more
+                </span>
+                </span >
+               
+            </div >
         </div >
-        
-    </div >
-    </div >
-
-    `;
+    </div >`;
 
     slide.appendChild(panel);
     container.appendChild(slide);
@@ -78,7 +74,7 @@ function loadVideoIntoSlide(slide, videoData) {
     const video = document.createElement("video");
     video.setAttribute("playsinline", "");
     video.setAttribute("muted", "");
-    video.controls = true;
+    video.controls = false;
     video.style.width = "100%";
     video.style.height = "100%";
 
@@ -235,7 +231,7 @@ function toggleDescription(toggleBtn) {
 
 
     const descriptionContainer = toggleBtn.closest(".description-container");
-    const textSpan = descriptionContainer.querySelector("#description");
+    const textSpan = descriptionContainer.querySelector(".description-text.text");
     const slide = toggleBtn.closest(".swiper-slide");
 
     if (!slide || !slide.id) {
@@ -257,27 +253,18 @@ function toggleDescription(toggleBtn) {
     const videoData = fetched_videos[slideIndex];
 
 
-    const isExpanded = toggleBtn.textContent.trim().toLowerCase() === "less";
+    const isExpanded = toggleBtn.textContent.trim().toLowerCase() === "show less";
 
     if (isExpanded) {
         // Collapse
-        textSpan.textContent = description.slice(0, 55) + "......";
-        toggleBtn.textContent = "more";
+        textSpan.innerHTML = `${description.slice(0, 55) + "......"} <span class = "description-text toggle" onclick="toggleDescription(this)">show more</span>`;
+        toggleBtn.textContent = "show more";
     } else {
         // Expand
-        textSpan.textContent = description;
-        toggleBtn.textContent = "less";
+        textSpan.innerHTML = `${description}     <span class = "description-text toggle" onclick="toggleDescription(this)">show less</span>`;
+        toggleBtn.textContent = "show less";
     }
-    textSpan.style = `
-  width: relative;
-  height: 100%;
-  font-size: 35px;
-  font-weight: lighter;
-  letter-spacing: 2px;
-  display: flex;
-  align-items: flex-end;     /* Aligns text vertically to the bottom */
-  justify-content: flex-start; /* Aligns text horizontally to the left */
-`;
+
 }
 
 
@@ -358,7 +345,7 @@ async function loadURL() {
         console.log("Original video URL from DB:", videoData.videoUrl);
 
         // 2. Send to HLS processor
-        const processRes = await fetch("https://51.20.131.73:3000/api/cache", {
+        const processRes = await fetch("https://ziditmp4pipeline.onrender.com/api/cache", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

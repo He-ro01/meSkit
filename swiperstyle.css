@@ -193,9 +193,14 @@ video {
     text-align: start;
 }
 
+.header-bar-element.active {
+    color: #ffffff;
+    font-size: 1.4em;
+}
+
 .name-description #description {
     width: relative;
-    font-size: 30px;
+    font-size: 300px;
     font-weight: lighter;
     letter-spacing: 2px;
     line-height: 60px;
@@ -230,19 +235,34 @@ video {
     display: flex;
     flex-direction: row;
     width: relative;
-    font-size: 40px;
+
     align-items: flex-end;
 }
-#description-length-toggle
-{
- font-size: 40px;
+
+.description-text {
+    font-size: 40px;
+    line-height: 50px;
+    right: 0;
 }
+
+.description-text.toggle {
+
+    color: rgba(255, 255, 255, 0.623);
+    left: 60%;
+    font-size: 40px;
+    line-height: 0px;
+}
+
+#description-length-toggle {
+    font-size: 30px;
+}
+
 .name-description .description-options-container {
     height: inherit;
     display: flex;
     justify-content: flex-start;
     color: rgba(255, 255, 255, 0.495);
-   
+
     /* Align left horizontally */
 
     /* Align bottom vertically */
@@ -261,28 +281,25 @@ video {
     font-size: 0.85em;
 }
 
-.slide-panel div span:first-child {
-    font-size: clamp(1em, 5vw, 2em);
-    line-height: 1;
-}
 
-.slide-panel div span:last-child {
-    font-size: 0.85em;
-    margin-top: 4px;
-}
 
 /* Header bar */
+.bottom-bar .icon.selected {
+    color: #FE0086;
+}
+
 .header-bar {
 
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 50px;
-    font-size: 3em;
+    gap: 30px;
+    font-size: 2em;
     font-weight: bold;
-    color: rgb(255, 255, 255);
+    color: rgba(255, 255, 255, 0.621);
     z-index: 25;
     letter-spacing: 1px;
+    text-shadow: 5px 5px 15px rgba(0, 0, 0, 0.331);
 }
 
 /* Navigation buttons */

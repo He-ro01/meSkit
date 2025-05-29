@@ -194,10 +194,11 @@ video {
 }
 
 .name-description #description {
-    width: 100%;
+    width: relative;
     font-size: 30px;
     font-weight: lighter;
     letter-spacing: 2px;
+    line-height: 60px;
 }
 
 .name-description {
@@ -228,16 +229,20 @@ video {
     height: relative;
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: relative;
     font-size: 40px;
     align-items: flex-end;
 }
-
+#description-length-toggle
+{
+ font-size: 40px;
+}
 .name-description .description-options-container {
     height: inherit;
     display: flex;
     justify-content: flex-start;
     color: rgba(255, 255, 255, 0.495);
+   
     /* Align left horizontally */
 
     /* Align bottom vertically */
@@ -246,7 +251,7 @@ video {
 
 
 .metered {
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 
 .slide-panel div {

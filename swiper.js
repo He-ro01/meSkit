@@ -32,7 +32,7 @@ function createSlide(index) {
     panel.innerHTML = `
     <div class = "bottom-right ">
         <div class = "profile-icon" onclick="showUserProfile()">👤</div>
-        <i class="fi fi-rr-eye icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rr-play icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rr-heart icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rr-bookmark icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rr-circle-ellipsis icon"></i>
@@ -43,8 +43,8 @@ function createSlide(index) {
             <span>John Doe</span>
         </div>
         <div class = "description-container">
-            <span id = "description" style = "width: 100%;height: 100%;font-size: 35px;font-weight: lighter;letter-spacing: 2px;display: flex; align-items: flex-end;  ">
-                ${getSlideObjectByIndex(index).description.slice(0, 40) + "..."}
+            <span id = "description" style = "width: relative;height: 100%;font-size: 35px;font-weight: lighter;letter-spacing: 2px;display: flex; align-items: flex-end;  ">
+                ${getSlideObjectByIndex(index).description.slice(0, 55) + "......"}
             </span >
             <div class="description-options-container">
                 <span id="description-length-toggle" onclick="toggleDescription(this)" >
@@ -83,12 +83,27 @@ function loadVideoIntoSlide(slide, videoData) {
     video.style.height = "100%";
 
     if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0) {
-        loadVideoWithHLS(video, videoData.hlsUrl);
+        loadVideoWithHLS(video, videoData.videoUrl);
     }
 
     videoContainer.appendChild(video);
     slide.appendChild(videoContainer);
 }
+//
+function convertRedgifsUrl(url) {
+  // Extract the file name without extension
+  const match = url.match(/\/([^\/]+?)-mobile\.mp4$/i);
+  if (!match) return null;
+
+  const gifName = match[1].toLowerCase();
+  return `https://api.redgifs.com/v2/gifs/${gifName}/sd.m3u8`;
+}
+
+// Example usage
+const originalUrl = 'https://media.redgifs.com/RobustImmenseSnoutbutterfly-mobile.mp4';
+const newUrl = convertRedgifsUrl(originalUrl);
+console.log(newUrl);
+// Output: https://api.redgifs.com/v2/gifs/robustimmensesnoutbutterfly/sd.m3u8
 
 
 function loadVideoWithHLS(videoEl, url) {
@@ -250,7 +265,7 @@ function toggleDescription(toggleBtn) {
 
     if (isExpanded) {
         // Collapse
-        textSpan.textContent = description.slice(0, 40) + "...";
+        textSpan.textContent = description.slice(0, 55) + "......";
         toggleBtn.textContent = "more";
     } else {
         // Expand
@@ -258,7 +273,7 @@ function toggleDescription(toggleBtn) {
         toggleBtn.textContent = "less";
     }
     textSpan.style = `
-  width: 100%;
+  width: relative;
   height: 100%;
   font-size: 35px;
   font-weight: lighter;
@@ -317,7 +332,8 @@ async function myLoop() {
         if (!video || Object.keys(video).length === 0) {
             console.log("Loading video for index:", i);
             let newVideo = await loadURL();
-
+           
+            console.log(newVideo);
             if (newVideo) {
                 fetched_videos[i] = newVideo;
 
@@ -340,8 +356,8 @@ async function myLoop() {
 async function loadURL() {
     try {
         const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
-
         const videoData = await res.json();
+        videoData.videoUrl = convertRedgifsUrl(videoData.videoUrl)
         return videoData;
     } catch (error) {
         console.warn("Retrying after error:", error);

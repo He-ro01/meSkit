@@ -93,7 +93,7 @@ function loadVideoIntoSlide(slide, videoData) {
 //
 function convertRedgifsUrl(url) {
     // Extract the file name without extension
-    const match = url.match(/\/([^\/]+?)-mobile\.mp4$/i);
+    const match = url.match(/\/([^\/]+?)-mobile\.m4s$/i);
     if (!match) return null;
 
     const gifName = match[1].toLowerCase();

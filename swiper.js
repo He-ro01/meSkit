@@ -83,17 +83,17 @@ function loadVideoIntoSlide(slide, videoData) {
     video.style.height = "100%";
 
     if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0) {
-        url = `https://meskit-backend.onrender.com/proxy?url=${videoData.videoUrl} `
-        loadVideoWithHLS(video, url);
+
+        loadVideoWithHLS(video, videoData.videoUrl);
     }
 
     videoContainer.appendChild(video);
     slide.appendChild(videoContainer);
 }
 //
-function convertRedgifsUrl(url) {
+function convertm4sToM3u8(url) {
     // Extract the file name without extension
-    const match = url.match(/\/([^\/]+?)-mobile\.m4s$/i);
+    const match = url.match(/\/([^\/]+?)-mobile\.mp4$/i);
     if (!match) return null;
 
     const gifName = match[1].toLowerCase();
@@ -102,7 +102,7 @@ function convertRedgifsUrl(url) {
 
 // Example usage
 const originalUrl = 'https://media.redgifs.com/RobustImmenseSnoutbutterfly-mobile.mp4';
-const newUrl = convertRedgifsUrl(originalUrl);
+const newUrl = convertm4sToM3u8(originalUrl);
 console.log(newUrl);
 // Output: https://api.redgifs.com/v2/gifs/robustimmensesnoutbutterfly/sd.m3u8
 
@@ -110,6 +110,7 @@ console.log(newUrl);
 function loadVideoWithHLS(videoEl, url) {
     if (Hls.isSupported()) {
         const hls = new Hls();
+        console.log("loading: " + url);
         hls.loadSource(url);
         hls.attachMedia(videoEl);
     } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
@@ -358,7 +359,8 @@ async function loadURL() {
     try {
         const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
         const videoData = await res.json();
-        videoData.videoUrl = convertRedgifsUrl(videoData.videoUrl)
+        videoData.videoUrl = convertm4sToM3u8(videoData.videoUrl);
+        //
         return videoData;
     } catch (error) {
         console.warn("Retrying after error:", error);

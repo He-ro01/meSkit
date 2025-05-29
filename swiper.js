@@ -89,8 +89,8 @@ function loadVideoIntoSlide(slide, videoData) {
         typeof videoData.videoUrl === 'string' &&
         videoData.videoUrl.trim() !== ''
     ) {
-        const url = `https://meskit-backend.onrender.com/proxy?url=${encodeURIComponent(videoData.videoUrl)}`;
-        loadVideoWithHLS(video, url);
+
+        loadVideoWithHLS(video, videoData.videoUrl);
     }
 
     videoContainer.appendChild(video);
@@ -351,16 +351,34 @@ async function myLoop() {
 
 async function loadURL() {
     try {
-        const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
+        // 1. Get video URL from backend
+        const res = await fetch("http://localhost:5000/fetch-video");
         const videoData = await res.json();
 
-        //
+        console.log("Original video URL from DB:", videoData.videoUrl);
+
+        // 2. Send to HLS processor
+        const processRes = await fetch("http://51.20.131.73:3000/api/cache", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ videoUrl: videoData.videoUrl }),
+        });
+
+        const processData = await processRes.json();
+        videoData.videoUrl = processData.streamUrl;
+
+        // 3. Final output
+        console.log("Final HLS stream URL:", videoData.videoUrl);
+
         return videoData;
     } catch (error) {
         console.warn("Retrying after error:", error);
-        return await loadURL(); // retry
+        return await loadURL();
     }
 }
+
 
 myLoop(); // Start the loop
 

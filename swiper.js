@@ -78,13 +78,19 @@ function loadVideoIntoSlide(slide, videoData) {
     const video = document.createElement("video");
     video.setAttribute("playsinline", "");
     video.setAttribute("muted", "");
-    video.controls = false;
+    video.controls = true;
     video.style.width = "100%";
     video.style.height = "100%";
 
-    if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0) {
-
-        loadVideoWithHLS(video, videoData.videoUrl);
+    if (
+        videoData &&
+        typeof videoData === 'object' &&
+        Object.keys(videoData).length !== 0 &&
+        typeof videoData.videoUrl === 'string' &&
+        videoData.videoUrl.trim() !== ''
+    ) {
+        const url = `https://meskit-backend.onrender.com/proxy?url=${encodeURIComponent(videoData.videoUrl)}`;
+        loadVideoWithHLS(video, url);
     }
 
     videoContainer.appendChild(video);
@@ -347,7 +353,7 @@ async function loadURL() {
     try {
         const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
         const videoData = await res.json();
-       
+
         //
         return videoData;
     } catch (error) {

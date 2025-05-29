@@ -83,7 +83,8 @@ function loadVideoIntoSlide(slide, videoData) {
     video.style.height = "100%";
 
     if (videoData && typeof videoData === 'object' && Object.keys(videoData).length !== 0) {
-        loadVideoWithHLS(video, videoData.videoUrl);
+        url = `https://meskit-backend.onrender.com/proxy?url=${videoData.videoUrl} `
+        loadVideoWithHLS(video, url);
     }
 
     videoContainer.appendChild(video);
@@ -91,12 +92,12 @@ function loadVideoIntoSlide(slide, videoData) {
 }
 //
 function convertRedgifsUrl(url) {
-  // Extract the file name without extension
-  const match = url.match(/\/([^\/]+?)-mobile\.mp4$/i);
-  if (!match) return null;
+    // Extract the file name without extension
+    const match = url.match(/\/([^\/]+?)-mobile\.mp4$/i);
+    if (!match) return null;
 
-  const gifName = match[1].toLowerCase();
-  return `https://api.redgifs.com/v2/gifs/${gifName}/sd.m3u8`;
+    const gifName = match[1].toLowerCase();
+    return `https://api.redgifs.com/v2/gifs/${gifName}/sd.m3u8`;
 }
 
 // Example usage
@@ -332,7 +333,7 @@ async function myLoop() {
         if (!video || Object.keys(video).length === 0) {
             console.log("Loading video for index:", i);
             let newVideo = await loadURL();
-           
+
             console.log(newVideo);
             if (newVideo) {
                 fetched_videos[i] = newVideo;

@@ -352,13 +352,13 @@ async function myLoop() {
 async function loadURL() {
     try {
         // 1. Get video URL from backend
-        const res = await fetch("http://localhost:5000/fetch-video");
+        const res = await fetch("https://smeSkit-backend.onrender.com/fetch-video");
         const videoData = await res.json();
 
         console.log("Original video URL from DB:", videoData.videoUrl);
 
         // 2. Send to HLS processor
-        const processRes = await fetch("http://51.20.131.73:3000/api/cache", {
+        const processRes = await fetch("https://51.20.131.73:3000/api/cache", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

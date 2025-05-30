@@ -240,8 +240,8 @@ video {
 }
 
 .profile-icon {
-    width: 6vh;
-    height: 6vh;
+    width: 5.5vh;
+    height: 5.5vh;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     display: flex;
@@ -253,9 +253,9 @@ video {
 }
 
 .user-profile-wrapper {
-    height: 5.5vh;
-    width: 5.5vh;
-    flex: 0 0 5.5vh;
+    height: 4.5vh;
+    width: 4.5vh;
+    flex: 0 0 4.5vh;
     display: flex;
     justify-content: center;
     /* optional: for vertical centering */
@@ -363,7 +363,8 @@ video {
 }
 
 .name-text {
-    font-size: 40px;
+    font-size: 30px;
+    font-weight: bolder;
     display: flex;
     align-items: center;
     gap: 30px;
@@ -380,7 +381,7 @@ video {
 
 .description-text {
     font-size: 30px;
-    font-weight: bolder;
+    font-weight: bold;
     line-height: 50px;
     right: 0;
 }
@@ -389,7 +390,7 @@ video {
 
     color: rgba(255, 255, 255, 0.623);
     left: 60%;
-    font-size: 40px;
+    font-size: 35px;
     line-height: 0px;
 }
 

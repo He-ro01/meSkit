@@ -108,25 +108,9 @@ function updateProfileIcon(slide, imageUrl) {
     const profileIcon = slide.querySelector(".profile-icon");
     if (!profileIcon) return;
 
-    // Clear existing content
-    profileIcon.innerHTML = "";
-
-    // Create the image element
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.alt = "Profile Image";
-    img.style.width = "100%";  // optional – let you handle styling
-    img.style.height = "auto"; // optional – maintain aspect ratio
-    img.style.borderRadius = "50%"; // optional – circular appearance
-
-    // Image load error fallback
-    img.onerror = () => {
-        img.src = "default-profile.jpg"; // fallback image path
-    };
-
-    // Append to profile icon container
-    profileIcon.appendChild(img);
+    profileIcon.innerHTML = `<img src="${imageUrl}" alt="Profile Image" style="width: 100%; height: auto; border-radius: 50%;">`;
 }
+
 
 function getSlideObjectByIndex(index) {
     return slide_objects.find(obj => obj.index === index) || null;

@@ -286,10 +286,6 @@ function toggleDescription(toggleBtn) {
 }
 
 
-
-let startTime = 0;
-
-
 function dragSlide(offsetPercent) {
     slides.forEach((slide, i) => {
         slide.style.transition = "none";
@@ -297,16 +293,8 @@ function dragSlide(offsetPercent) {
     });
 }
 
-function resetSlidePositions(offsetPercent) {
-    slides.forEach((slide, i) => {
-        slide.style.transition = "transform 0.3s ease";
-        slide.style.transform = `translateY(${offsetPercent + (i - 1) * 100}%)`;
-    });
-}
-
 container.addEventListener("touchstart", (e) => {
     startY = e.touches[0].clientY;
-    startTime = Date.now();
     isDragging = true;
 });
 
@@ -322,17 +310,13 @@ container.addEventListener("touchend", () => {
     if (!isDragging) return;
     isDragging = false;
 
-    const elapsedTime = Date.now() - startTime;
+    const threshold = 25;
     const percent = (deltaY / window.innerHeight) * 100;
-    const velocity = deltaY / elapsedTime; // pixels per ms
 
-    const distanceThreshold = 25; // percent of screen height
-    const velocityThreshold = 0.5; // fast enough in px/ms
-
-    if (percent < -distanceThreshold || velocity < -velocityThreshold) {
+    if (percent < -threshold) {
         requestAnimationFrame(() => resetSlidePositions(-100));
         setTimeout(() => updateSlides("up"), 300);
-    } else if (percent > distanceThreshold || velocity > velocityThreshold) {
+    } else if (percent > threshold) {
         requestAnimationFrame(() => resetSlidePositions(100));
         setTimeout(() => updateSlides("down"), 300);
     } else {
@@ -341,7 +325,6 @@ container.addEventListener("touchend", () => {
 
     deltaY = 0;
 });
-
 let loading_vid = false;
 function updateSystem() {
     urlLoopLoad();

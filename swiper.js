@@ -4,7 +4,7 @@ let nearPrevious = 0;
 let nearNext = 2;
 let currentIndex = 0;
 let fetchedVideoIndex = 0;
-
+let dirty = false;
 let previousCount = 0;
 let startY = 0;
 let deltaY = 0;
@@ -63,7 +63,8 @@ function getSlideObjectByIndex(index) {
 }
 
 function loadVideoIntoSlide(slide, videoData) {
-    if (slide.querySelector("video")) {
+
+    if (!slide || slide.querySelector("video")) {
         // Video already loaded, skip loading again
         return;
     }
@@ -85,7 +86,7 @@ function loadVideoIntoSlide(slide, videoData) {
         typeof videoData.videoUrl === 'string' &&
         videoData.videoUrl.trim() !== ''
     ) {
-
+        console.log(`loading video into slide`);
         loadVideoWithHLS(video, videoData.videoUrl);
     }
 
@@ -97,23 +98,33 @@ function loadVideoIntoSlide(slide, videoData) {
 
 // 
 
-function loadVideoWithHLS(videoEl, url) {
+async function loadVideoWithHLS(videoEl, url) {
     if (Hls.isSupported()) {
         const hls = new Hls();
-        console.log("loading: " + url);
-        hls.loadSource(url);
+
+        await hls.loadSource(url);
+
         hls.attachMedia(videoEl);
     } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
         videoEl.src = url;
+    }
+}
+async function loadHeadlessVideoWithHLS(url) {
+    return;
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        console.log("loading headlessly: " + url);
+        await hls.loadSource(url);
+        console.log(`loaded`);
     }
 }
 function removeSlideObjectByIndex(indexToRemove) {
     const i = slide_objects.findIndex(obj => obj.index === indexToRemove);
     if (i !== -1) {
         slide_objects.splice(i, 1);
-        console.log(`Removed object with index ${indexToRemove} `);
+
     } else {
-        console.warn(`No object found with index ${indexToRemove} `);
+
     }
 }
 
@@ -125,11 +136,13 @@ async function prefetchVideos(count = 5) {
     for (let i = 0; i < count; i++) {
         fetched_videos.push({});
     }
+
 }
 
 async function initializeSlides() {
 
     await prefetchVideos(5);
+    updateSystem();
     const previous = createSlide(currentIndex - 1);
     const visible = createSlide(currentIndex);
     const next = createSlide(currentIndex + 1);
@@ -162,8 +175,9 @@ async function updateSlides(direction) {
 
     if (direction === "up") {
         currentIndex++;
-        if (currentIndex + 1 >= fetched_videos.length) {
+        if (currentIndex + 5 >= fetched_videos.length) {
             await fetchVideo(); // Ensure we have space in array
+
         }
 
         const oldPrevious = slides[0];
@@ -200,24 +214,27 @@ async function updateSlides(direction) {
         oldNext.remove();
     }
 
-
+    resetSlidePositions();
+    controlVideoPlayback();
+    updateSystem();
     // Load video if data already fetched
+    console.log(`current index; ${currentIndex} | fetched videos length ${fetched_videos.length}`);
     const previousVideoData = fetched_videos[currentIndex - 1];
     const videoData = fetched_videos[currentIndex];
     const nextVideoData = fetched_videos[currentIndex + 1];
-    if (previousVideoData && Object.keys(previousVideoData).length !== 0) {
+    console.log(fetched_videos);
+    if (previousVideoData != {} && previousVideoData.videoUrl.endsWith(`m3u8`)) {
         loadVideoIntoSlide(slides[0], previousVideoData);
     }
-    if (nextVideoData && Object.keys(nextVideoData).length !== 0) {
+    if (!nextVideoData.empty && nextVideoData.videoUrl.endsWith(`m3u8`)) {
         loadVideoIntoSlide(slides[2], nextVideoData);
     }
 
-    if (videoData && Object.keys(videoData).length !== 0) {
+    if (!videoData.empty && videoData.videoUrl.endsWith(`m3u8`)) {
         loadVideoIntoSlide(slides[1], videoData);
     }
 
-    resetSlidePositions();
-    controlVideoPlayback();
+
 }
 
 
@@ -247,9 +264,9 @@ function toggleDescription(toggleBtn) {
     }
 
     const slideIndex = parseInt(slideIdMatch[1], 10);
-    console.log(slideIndex);
+
     description = getSlideObjectByIndex(slideIndex).description;
-    console.log(description);
+
     const videoData = fetched_videos[slideIndex];
 
 
@@ -308,66 +325,49 @@ container.addEventListener("touchend", () => {
     deltaY = 0;
 });
 let loading_vid = false;
+function updateSystem() {
+    urlLoopLoad();
+}
+// LOOP A: Fetch videos if not already fetched
+async function urlLoopLoad() {
+    let process_id = currentIndex;
+    for (let i = 0; i < 5; i++) {
+        startLoading(i + currentIndex);
+    }
+}
 
-async function myLoop() {
-    for (let i = 0; i < fetched_videos.length; i++) {
-        let video = fetched_videos[i];
-        if (!video || Object.keys(video).length === 0) {
-            console.log("Loading video for index:", i);
-            let newVideo = await loadURL();
+// LOOP B: Process videos that haven’t been converted to HLS
+async function startLoading(index) {
 
-            console.log(newVideo);
-            if (newVideo) {
-                fetched_videos[i] = newVideo;
+    video = fetched_videos[index];
+    if (!video || Object.keys(video).length === 0) {
+        try {
+            const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
+            const videoData = await res.json();
 
-                // Load into correct slide if it's visible
-                if (i === currentIndex - 1 && slides[0]) {
-                    loadVideoIntoSlide(slides[0], newVideo);
-                } else if (i === currentIndex && slides[1]) {
-                    loadVideoIntoSlide(slides[1], newVideo);
-                } else if (i === currentIndex + 1 && slides[2]) {
-                    loadVideoIntoSlide(slides[2], newVideo);
-                }
+            //
+            fetched_videos[index] = video = videoData;
+            //
+            //
+            if (index === currentIndex - 1) {
+                loadVideoIntoSlide(slides[0], video);
             }
+            else if (index === currentIndex) {
+                loadVideoIntoSlide(slides[1], video);
+            }
+            else if (index === currentIndex + 1) {
+                loadVideoIntoSlide(slides[2], video);
+            }
+            else {
+                loadHeadlessVideoWithHLS(video.videoUrl);
+            }
+            console.log(`processed ${index}`);
+
+        } catch (err) {
+            console.warn("Error fetching video:", err);
         }
     }
-
-    requestAnimationFrame(myLoop);
 }
-
-
-async function loadURL() {
-    try {
-        // 1. Get video URL from backend
-        const res = await fetch("https://meSkit-backend.onrender.com/fetch-video");
-        const videoData = await res.json();
-
-        console.log("Original video URL from DB:", videoData.videoUrl);
-
-        // 2. Send to HLS processor
-        const processRes = await fetch("https://ziditmp4pipeline.onrender.com/api/cache", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ videoUrl: videoData.videoUrl }),
-        });
-
-        const processData = await processRes.json();
-        videoData.videoUrl = processData.streamUrl;
-
-        // 3. Final output
-        console.log("Final HLS stream URL:", videoData.videoUrl);
-
-        return videoData;
-    } catch (error) {
-        console.warn("Retrying after error:", error);
-        return await loadURL();
-    }
-}
-
-
-myLoop(); // Start the loop
 
 // 🔥 Start when DOM is ready
 window.addEventListener("DOMContentLoaded", initializeSlides);

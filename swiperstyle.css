@@ -107,6 +107,32 @@
     background-color: rgb(61, 61, 61);
 }
 
+.profile-icon {
+    width: 80px;
+    /* size of the profile icon */
+    height: 80px;
+    border-radius: 50%;
+    /* makes the container circular */
+    overflow: hidden;
+    /* hides any part of the image outside the circle */
+    display: inline-block;
+    border: 2px solid #ccc;
+    /* optional: border around the profile */
+    box-sizing: border-box;
+    background-color: #eee;
+    /* fallback background */
+}
+
+.profile-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* cover the entire container without distortion */
+    display: block;
+    /* removes inline spacing */
+}
+
+
 video {
     height: 100%;
     width: auto;

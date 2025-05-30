@@ -18,7 +18,7 @@ const getRandomColor = () =>
 function createSlide(index) {
     slide_objects.push({
         index: index,
-        description: `${index}Whereas recognition of the inherent dignity, Whereas recognition of the inherent dignity, Whereas recognition of the inherent dignity, Whereas recognition of the inherent dignity`
+        description: `..........................`
     });
 
     const slide = document.createElement("div");
@@ -32,7 +32,7 @@ function createSlide(index) {
     panel.className = "slide-panel";
     panel.innerHTML = `
     <div class = "bottom-right ">
-        <div class = "profile-icon" onclick="showUserProfile()">👤</div>
+        <div class = "profile-icon" >👤</div>
         <i class="fi fi-rr-play icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rr-heart icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rr-bookmark icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
@@ -41,7 +41,7 @@ function createSlide(index) {
     <div class = "bottom-left">
         <div class = "name-description">
             <div class = "name-container">
-                <span>John Doe</span>
+                <span class = "name-text">......</span>
             </div>
             <div class = "description-container">
                 <span class = "description-text text" >
@@ -59,6 +59,67 @@ function createSlide(index) {
     container.appendChild(slide);
     return slide;
 }
+function updateDescription(slide, desc) {
+    if (!slide || !slide.id) {
+        console.warn("Slide or slide ID not found");
+        return;
+    }
+
+    const slideIdMatch = slide.id.match(/slide-(\d+)/);
+    if (!slideIdMatch) {
+        console.warn("Slide ID format invalid:", slide.id);
+        return;
+    }
+
+    const slideIndex = parseInt(slideIdMatch[1], 10);
+
+    // Update in slide_objects
+    const slideObj = getSlideObjectByIndex(slideIndex);
+    if (slideObj) {
+        slideObj.description = desc;
+    } else {
+        console.warn("No slide object found for index", slideIndex);
+        return;
+    }
+
+    // Update in DOM
+    const textSpan = slide.querySelector(".description-text.text");
+    if (textSpan) {
+        textSpan.innerHTML = `${desc.slice(0, 55) + "......"} <span class="description-text toggle" onclick="toggleDescription(this)">show more</span>`;
+    } else {
+        console.warn("Description text span not found in slide");
+    }
+}
+function updateName(slide, newName) {
+    if (!slide) {
+        console.warn("Slide not provided");
+        return;
+    }
+
+    const nameSpan = slide.querySelector(".name-text");
+    if (!nameSpan) {
+        console.warn("No .name-text element found within the slide");
+        return;
+    }
+
+    nameSpan.textContent = newName;
+}
+function updateProfileIcon(slide, imageUrl) {
+    const profileIcon = slide.querySelector(".profile-icon");
+    if (profileIcon) {
+        // Clear any existing content
+        profileIcon.innerHTML = "";
+
+        // Create the image element
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = "Profile Icon";
+
+        // Insert the image into the profile icon container
+        profileIcon.appendChild(img);
+    }
+}
+
 function getSlideObjectByIndex(index) {
     return slide_objects.find(obj => obj.index === index) || null;
 }
@@ -93,6 +154,13 @@ function loadVideoIntoSlide(slide, videoData) {
 
     videoContainer.appendChild(video);
     slide.appendChild(videoContainer);
+    console.log(videoData);
+    if (videoData.description != null)
+        updateDescription(slide, videoData.description);
+    if (videoData.username != null)
+        updateName(slide, videoData.username);
+    if(videoData.imageUrl != null)
+        updateProfileIcon(slide, videoData.imageUrl);
 }
 //
 

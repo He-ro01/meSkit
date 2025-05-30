@@ -31,14 +31,14 @@ i {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
     font-size: 70px;
     text-align: center;
-    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.313);
+    text-shadow: 1px 1px 15px rgba(0, 0, 0, 0.256);
 }
 
 .icon {
-    color: rgba(255, 255, 255, 0.756);
+    color: rgb(255, 255, 255);
 }
 
 .icon-text {

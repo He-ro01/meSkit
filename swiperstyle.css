@@ -55,7 +55,6 @@
     left: 0;
     width: 100vw;
     height: 6.5vh;
-    border-top: 3px solid rgba(255, 255, 255, 0.379);
     padding-bottom: env(safe-area-inset-bottom);
     padding-top: 20px;
     padding-bottom: 20px;
@@ -107,25 +106,72 @@
     background-color: rgb(61, 61, 61);
 }
 
-.profile-icon {
-    width: 80px;
-    /* size of the profile icon */
-    height: 80px;
-    border-radius: 50%;
-    /* makes the container circular */
+.custom-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* Ensures children stay at the bottom */
+    align-items: center;
+    /* 🔥 This centers horizontally */
+}
+
+.follow-icon-wrapper {
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    font-weight: bolder;
+    border: 2px solid #ffffff;
+    border-radius: 50px;
+    padding: 10px 15px;
+    font-size: 30px;
+}
+
+.follow-icon {
+
+    border: 5px solid rgba(255, 255, 255, 0);
+    height: 40px;
+    width: 40px;
+    background-color: #fe008700;
+    z-index: 999;
+    padding: 10px;
+    border-radius: 100%;
+    bottom: 727px;
+    display: flex;
+    justify-content: center;
+}
+
+.follow-icon i {
+    color: #FE0086;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+
+
+
+.user-profile-wrapper {
+    height: 6vh;
+    width: 6vh;
+    flex: 0 0 6vh;
+    display: flex;
+    justify-content: center;
+    /* optional: for vertical centering */
+    background-color: rgba(255, 255, 255, 0.473);
+    border-radius: 100%;
     overflow: hidden;
-    /* hides any part of the image outside the circle */
-    display: inline-block;
-    border: 2px solid #ccc;
-    /* optional: border around the profile */
-    box-sizing: border-box;
-    background-color: #eee;
-    /* fallback background */
 }
 
 .profile-icon img {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
     /* cover the entire container without distortion */
     display: block;
@@ -142,13 +188,70 @@ video {
     left: 0;
 }
 
+.video-slider {
+    -webkit-appearance: none;
+    /* Remove default styling */
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: transparent;
+    /* Background handled by parent */
+    cursor: pointer;
+    outline: none;
+    border-radius: 3px;
+}
+
+/* Track */
+.video-slider::-webkit-slider-runnable-track {
+    height: 6px;
+    background: transparent;
+}
+
+.video-slider::-moz-range-track {
+    height: 6px;
+    background: transparent;
+}
+
+/* Thumb */
+.video-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 14px;
+    width: 14px;
+    background: #fe0087;
+    border: 2px solid #fe0087;
+    border-radius: 50%;
+    margin-top: -4px;
+    /* Center thumb vertically */
+
+}
+
+.video-slider::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    background: #ffffff00;
+    border: 2px solid #fe008700;
+    border-radius: 50%;
+
+}
+
+/* Hover effect */
+.video-slider:hover::-webkit-slider-thumb {
+    background: #fe008700;
+}
+
+.video-slider:hover::-moz-range-thumb {
+    background: #fe008700;
+}
+
+
+
 .visible {
     z-index: 10;
 }
 
 .profile-icon {
-    width: 120px;
-    height: 120px;
+    width: 6.5vh;
+    height: 6.5vh;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     display: flex;
@@ -156,7 +259,7 @@ video {
     justify-content: center;
     font-size: clamp(1em, 4vw, 2em);
     margin-bottom: 20px;
-    border: 2px solid white;
+    border: 5px solid #FE0086;
 }
 
 
@@ -196,15 +299,17 @@ video {
 .bottom-right {
     position: absolute;
     bottom: 100px;
-    right: 2vw;
+    right: 3vw;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: start;
     color: white;
-    gap: 100px;
+    gap: 120px;
     z-index: 30;
     pointer-events: auto;
 }
+
 
 .bottom-left {
     position: absolute;
@@ -251,9 +356,15 @@ video {
 }
 
 .name-description .name-container {
-    font-weight: bold;
+    font-weight: bolder;
     width: 100%;
-    font-size: 50px;
+    font-size: 45px;
+}
+
+.name-text {
+    display: flex;
+    align-items: center;
+    gap: 40px;
 }
 
 .name-description .description-container {
@@ -266,7 +377,8 @@ video {
 }
 
 .description-text {
-    font-size: 40px;
+    font-size: 30px;
+    font-weight: bolder;
     line-height: 50px;
     right: 0;
 }
@@ -300,12 +412,11 @@ video {
     margin-bottom: 10px;
 }
 
-.slide-panel div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 0.85em;
+.unmetered {
+    margin-top: 20px;
 }
+
+
 
 
 

@@ -32,16 +32,16 @@ function createSlide(index) {
     panel.className = "slide-panel";
     panel.innerHTML = `
     <div class = "bottom-right ">
-        <div class = "profile-icon" >👤</div>
-        <i class="fi fi-rr-play icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rr-heart icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rr-bookmark icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rr-circle-ellipsis icon"></i>
+       
+        <i class="fi fi-rs-play icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-heart icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-bookmark icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-circle-ellipsis icon unmetered"></i>
     </div>
     <div class = "bottom-left">
         <div class = "name-description">
             <div class = "name-container">
-                <span class = "name-text"></span>
+                <span class = "name-text"> <div class = "profile-icon" ><div class = "user-profile-wrapper">👤</div></div> Name<div class = "follow-icon-wrapper"> Follow</div></span>
             </div>
             <div class = "description-container">
                 <span class = "description-text text" >
@@ -102,13 +102,23 @@ function updateName(slide, newName) {
         return;
     }
 
-    nameSpan.textContent = newName;
+    // Look for a text node inside .name-text (skip icons, buttons, etc.)
+    for (const node of nameSpan.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== "") {
+            node.textContent = ` ${newName} `; // preserve spacing
+            return;
+        }
+    }
+
+    // If no existing text node was found, append it
+    nameSpan.appendChild(document.createTextNode(` ${newName} `));
 }
+
 function updateProfileIcon(slide, imageUrl) {
-    const profileIcon = slide.querySelector(".profile-icon");
+    const profileIcon = slide.querySelector(".user-profile-wrapper");
     if (!profileIcon) return;
 
-    profileIcon.innerHTML = `<img src="${imageUrl}" alt="Profile Image" style="width: 100%; height: auto; border-radius: 50%;">`;
+    profileIcon.innerHTML = `<img src="${imageUrl}" alt="Profile Image" "> </div>`;
 }
 
 
@@ -116,15 +126,16 @@ function getSlideObjectByIndex(index) {
     return slide_objects.find(obj => obj.index === index) || null;
 }
 
-function loadVideoIntoSlide(slide, videoData) {
 
+//
+function loadVideoIntoSlide(slide, videoData) {
     if (!slide || slide.querySelector("video")) {
-        // Video already loaded, skip loading again
         return;
     }
 
     const videoContainer = document.createElement("div");
     videoContainer.className = "video-container";
+    videoContainer.style.position = "relative";
 
     const video = document.createElement("video");
     video.setAttribute("playsinline", "");
@@ -132,6 +143,83 @@ function loadVideoIntoSlide(slide, videoData) {
     video.controls = false;
     video.style.width = "100%";
     video.style.height = "100%";
+    video.style.display = "block";
+
+    // Slider container
+    const sliderContainer = document.createElement("div");
+    sliderContainer.className = "video-slider-container";
+    sliderContainer.style.position = "absolute";
+    sliderContainer.style.bottom = "0";
+    sliderContainer.style.left = "0";
+    sliderContainer.style.width = "100%";
+    sliderContainer.style.zIndex = "2";
+    sliderContainer.style.height = "5px"; // Optional: some padding
+    sliderContainer.style.display = "flex";
+    sliderContainer.style.alignItems = "center";
+    //
+    sliderContainer.style.background = ` linear - gradient(to right,
+    #FE0086 0 %,
+    #FE0086 40 %,
+    rgba(0, 0, 255, 0) 60 %,
+    rgba(0, 0, 255, 0) 100 %)`
+
+    //
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = 0;
+    slider.max = 100;
+    slider.value = 0;
+    slider.className = "video-slider";
+    slider.style.width = "100%";
+    slider.style.margin = "0";
+
+    sliderContainer.appendChild(slider);
+
+    const playButton = document.createElement("div");
+    playButton.innerHTML = `<i class="fi fi-sr-play"></i>`;
+    playButton.className = "play-button";
+    playButton.style.position = "absolute";
+    playButton.style.top = "50%";
+    playButton.style.left = "50%";
+    playButton.style.transform = "translate(-50%, -50%)";
+    playButton.style.fontSize = "48px";
+    playButton.style.color = "white";
+    playButton.style.zIndex = "3";
+    playButton.style.cursor = "pointer";
+    playButton.style.display = "none";
+
+    video.addEventListener("click", () => {
+        if (video.paused) video.play();
+        else video.pause();
+    });
+
+    video.addEventListener("pause", () => {
+        playButton.style.display = "block";
+    });
+    video.addEventListener("play", () => {
+        playButton.style.display = "none";
+    });
+
+    playButton.addEventListener("click", () => {
+        video.play();
+    });
+
+    video.addEventListener("timeupdate", () => {
+        slider.value = (video.currentTime / video.duration) * 100;
+    });
+
+    slider.addEventListener("input", () => {
+        video.currentTime = (slider.value / 100) * video.duration;
+    });
+    video.addEventListener("timeupdate", () => {
+        const progress = (video.currentTime / video.duration) * 100;
+        slider.value = progress;
+
+        // Update gradient background based on progress
+        sliderContainer.style.background = `linear-gradient(to right,
+        #FE0086 ${progress}%,
+        rgba(255, 255, 255, 0.1) ${progress}%)`;
+    });
 
     if (
         videoData &&
@@ -145,16 +233,16 @@ function loadVideoIntoSlide(slide, videoData) {
     }
 
     videoContainer.appendChild(video);
+    videoContainer.appendChild(sliderContainer);
+    videoContainer.appendChild(playButton);
     slide.appendChild(videoContainer);
+
     console.log(videoData);
-    if (videoData.description != null)
-        updateDescription(slide, videoData.description);
-    if (videoData.username != null)
-        updateName(slide, videoData.username);
-    if (videoData.imageUrl != null)
-        updateProfileIcon(slide, videoData.imageUrl);
+    if (videoData.description != null) updateDescription(slide, videoData.description);
+    if (videoData.username != null) updateName(slide, videoData.username);
+    if (videoData.imageUrl != null) updateProfileIcon(slide, videoData.imageUrl);
 }
-//
+
 
 
 // 

@@ -106,18 +106,26 @@ function updateName(slide, newName) {
 }
 function updateProfileIcon(slide, imageUrl) {
     const profileIcon = slide.querySelector(".profile-icon");
-    if (profileIcon) {
-        // Clear any existing content
-        profileIcon.innerHTML = "";
+    if (!profileIcon) return;
 
-        // Create the image element
-        const img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = "Profile Icon";
+    // Clear existing content
+    profileIcon.innerHTML = "";
 
-        // Insert the image into the profile icon container
-        profileIcon.appendChild(img);
-    }
+    // Create the image element
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = "Profile Image";
+    img.style.width = "100%";  // optional – let you handle styling
+    img.style.height = "auto"; // optional – maintain aspect ratio
+    img.style.borderRadius = "50%"; // optional – circular appearance
+
+    // Image load error fallback
+    img.onerror = () => {
+        img.src = "default-profile.jpg"; // fallback image path
+    };
+
+    // Append to profile icon container
+    profileIcon.appendChild(img);
 }
 
 function getSlideObjectByIndex(index) {
@@ -159,7 +167,7 @@ function loadVideoIntoSlide(slide, videoData) {
         updateDescription(slide, videoData.description);
     if (videoData.username != null)
         updateName(slide, videoData.username);
-    if(videoData.imageUrl != null)
+    if (videoData.imageUrl != null)
         updateProfileIcon(slide, videoData.imageUrl);
 }
 //

@@ -157,17 +157,7 @@
 
 
 
-.user-profile-wrapper {
-    height: 6vh;
-    width: 6vh;
-    flex: 0 0 6vh;
-    display: flex;
-    justify-content: center;
-    /* optional: for vertical centering */
-    background-color: rgba(255, 255, 255, 0.473);
-    border-radius: 100%;
-    overflow: hidden;
-}
+
 
 .profile-icon img {
     width: 100%;
@@ -250,19 +240,29 @@ video {
 }
 
 .profile-icon {
-    width: 6.5vh;
-    height: 6.5vh;
+    width: 6vh;
+    height: 6vh;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(1em, 4vw, 2em);
     margin-bottom: 20px;
     border: 5px solid #FE0086;
+   
 }
 
-
+.user-profile-wrapper {
+    height: 5.5vh;
+    width: 5.5vh;
+    flex: 0 0 5.5vh;
+    display: flex;
+    justify-content: center;
+    /* optional: for vertical centering */
+    background-color: rgba(255, 255, 255, 0.473);
+    border-radius: 100%;
+    overflow: hidden;
+}
 
 .bottom-bar .icon {
     font-size: 50px;
@@ -338,6 +338,7 @@ video {
 }
 
 .name-description {
+    padding: 20px;
     left: 1vh;
     bottom: 0.1vh;
     position: absolute;
@@ -362,9 +363,10 @@ video {
 }
 
 .name-text {
+    font-size: 40px;
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 30px;
 }
 
 .name-description .description-container {
@@ -421,9 +423,7 @@ video {
 
 
 /* Header bar */
-.bottom-bar .icon.selected {
-    color: #FE0086;
-}
+.bottom-bar .icon.selected {}
 
 .header-bar {
 

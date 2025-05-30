@@ -18,7 +18,7 @@ const getRandomColor = () =>
 function createSlide(index) {
     slide_objects.push({
         index: index,
-        description: `..........................`
+        description: ``
     });
 
     const slide = document.createElement("div");
@@ -41,7 +41,7 @@ function createSlide(index) {
     <div class = "bottom-left">
         <div class = "name-description">
             <div class = "name-container">
-                <span class = "name-text">......</span>
+                <span class = "name-text"></span>
             </div>
             <div class = "description-container">
                 <span class = "description-text text" >

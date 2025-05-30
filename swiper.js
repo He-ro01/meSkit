@@ -11,6 +11,7 @@ let deltaY = 0;
 let isDragging = false;
 let fetched_videos = [];
 let slide_objects = [{}];
+let loaded_index = 0;
 const getRandomColor = () =>
     `hsl(${Math.floor(Math.random() * 360)}, 70%, 40%)`;
 
@@ -285,6 +286,10 @@ function toggleDescription(toggleBtn) {
 }
 
 
+
+let startTime = 0;
+
+
 function dragSlide(offsetPercent) {
     slides.forEach((slide, i) => {
         slide.style.transition = "none";
@@ -292,8 +297,16 @@ function dragSlide(offsetPercent) {
     });
 }
 
+function resetSlidePositions(offsetPercent) {
+    slides.forEach((slide, i) => {
+        slide.style.transition = "transform 0.3s ease";
+        slide.style.transform = `translateY(${offsetPercent + (i - 1) * 100}%)`;
+    });
+}
+
 container.addEventListener("touchstart", (e) => {
     startY = e.touches[0].clientY;
+    startTime = Date.now();
     isDragging = true;
 });
 
@@ -309,13 +322,17 @@ container.addEventListener("touchend", () => {
     if (!isDragging) return;
     isDragging = false;
 
-    const threshold = 25;
+    const elapsedTime = Date.now() - startTime;
     const percent = (deltaY / window.innerHeight) * 100;
+    const velocity = deltaY / elapsedTime; // pixels per ms
 
-    if (percent < -threshold) {
+    const distanceThreshold = 25; // percent of screen height
+    const velocityThreshold = 0.5; // fast enough in px/ms
+
+    if (percent < -distanceThreshold || velocity < -velocityThreshold) {
         requestAnimationFrame(() => resetSlidePositions(-100));
         setTimeout(() => updateSlides("up"), 300);
-    } else if (percent > threshold) {
+    } else if (percent > distanceThreshold || velocity > velocityThreshold) {
         requestAnimationFrame(() => resetSlidePositions(100));
         setTimeout(() => updateSlides("down"), 300);
     } else {
@@ -324,6 +341,7 @@ container.addEventListener("touchend", () => {
 
     deltaY = 0;
 });
+
 let loading_vid = false;
 function updateSystem() {
     urlLoopLoad();
@@ -332,37 +350,39 @@ function updateSystem() {
 async function urlLoopLoad() {
     let process_id = currentIndex;
     for (let i = 0; i < 5; i++) {
-        startLoading(i + currentIndex);
+        startLoading();
     }
 }
 
 // LOOP B: Process videos that haven’t been converted to HLS
-async function startLoading(index) {
+async function startLoading() {
 
-    video = fetched_videos[index];
+    video = fetched_videos[loaded_index];
     if (!video || Object.keys(video).length === 0) {
         try {
             const res = await fetch("https://meskit-backend.onrender.com/fetch-video");
             const videoData = await res.json();
 
             //
-            fetched_videos[index] = video = videoData;
+            fetched_videos[loaded_index] = video = videoData;
             //
+
             //
-            if (index === currentIndex - 1) {
+            if (loaded_index === currentIndex - 1) {
                 loadVideoIntoSlide(slides[0], video);
             }
-            else if (index === currentIndex) {
+            else if (loaded_index === currentIndex) {
+                console.log(`loading ${video.videoUrl}`);
                 loadVideoIntoSlide(slides[1], video);
             }
-            else if (index === currentIndex + 1) {
+            else if (loaded_index === currentIndex + 1) {
                 loadVideoIntoSlide(slides[2], video);
             }
             else {
                 loadHeadlessVideoWithHLS(video.videoUrl);
             }
-            console.log(`processed ${index}`);
-
+            console.log(`processed ${loaded_index}`);
+            loaded_index++;
         } catch (err) {
             console.warn("Error fetching video:", err);
         }

@@ -284,8 +284,10 @@ function toggleDescription(toggleBtn) {
     }
 
 }
+let startTime = 0;
+let endTime = 0;
 
-
+// Function to move slides based on drag offset percentage
 function dragSlide(offsetPercent) {
     slides.forEach((slide, i) => {
         slide.style.transition = "none";
@@ -295,6 +297,7 @@ function dragSlide(offsetPercent) {
 
 container.addEventListener("touchstart", (e) => {
     startY = e.touches[0].clientY;
+    startTime = Date.now(); // Capture start time
     isDragging = true;
 });
 
@@ -306,17 +309,36 @@ container.addEventListener("touchmove", (e) => {
     requestAnimationFrame(() => dragSlide(percent));
 });
 
+let averageVelocity = 2; // Typical speed in px/ms — adjust as needed
+
 container.addEventListener("touchend", () => {
     if (!isDragging) return;
     isDragging = false;
+    endTime = Date.now();
 
-    const threshold = 25;
+    const timeElapsed = endTime - startTime;
+    const absDeltaY = Math.abs(deltaY);
+    const velocity = absDeltaY / timeElapsed; // pixels per ms
+
+    // Speed multiplier (1 = average, >1 = fast, <1 = slow)
+    let speedMultiplier = velocity / averageVelocity;
+
+    // Optional: Clamp the multiplier to prevent extremes
+    speedMultiplier = Math.max(0.5, Math.min(speedMultiplier, 3));
+
+    // Log it for debugging
+    console.log("Speed Multiplier:", speedMultiplier);
+
+    // Use it to adjust your threshold
+    const baseThreshold = 25;
+    const dynamicThreshold = baseThreshold / speedMultiplier;
+
     const percent = (deltaY / window.innerHeight) * 100;
 
-    if (percent < -threshold) {
+    if (percent < -dynamicThreshold) {
         requestAnimationFrame(() => resetSlidePositions(-100));
         setTimeout(() => updateSlides("up"), 300);
-    } else if (percent > threshold) {
+    } else if (percent > dynamicThreshold) {
         requestAnimationFrame(() => resetSlidePositions(100));
         setTimeout(() => updateSlides("down"), 300);
     } else {
@@ -324,8 +346,7 @@ container.addEventListener("touchend", () => {
     }
 
     deltaY = 0;
-});
-let loading_vid = false;
+}); loading_vid = false;
 function updateSystem() {
     urlLoopLoad();
 }

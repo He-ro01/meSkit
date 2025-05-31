@@ -7,7 +7,9 @@ let fetchedVideoIndex = 0;
 let dirty = false;
 let previousCount = 0;
 let startY = 0;
+let startX = 0;
 let deltaY = 0;
+let deltaX = 0;
 let isDragging = false;
 let fetched_videos = [];
 let slide_objects = [{}];
@@ -32,10 +34,9 @@ function createSlide(index) {
     panel.className = "slide-panel";
     panel.innerHTML = `
     <div class = "bottom-right ">
-        
-        <i class="fi fi-rs-play icon metered"><span class = "icon-text" >${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rs-heart icon metered"><span class = "icon-text" >${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rs-bookmark icon metered"><span class = "icon-text" >${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-play icon metered"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-heart icon metered"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-bookmark icon metered"><span class = "icon-text">${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rs-circle-ellipsis icon unmetered"></i>
     </div>
     <div class = "bottom-left">
@@ -127,16 +128,14 @@ function loadVideoIntoSlide(slide, videoData) {
     sliderContainer.style.bottom = "0";
     sliderContainer.style.left = "0";
     sliderContainer.style.width = "100%";
-    sliderContainer.style.zIndex = "2";
-    sliderContainer.style.height = "5px"; // Optional: some padding
     sliderContainer.style.display = "flex";
     sliderContainer.style.alignItems = "center";
     //
     sliderContainer.style.background = ` linear - gradient(to right,
     #FE0086 0 %,
     #FE0086 40 %,
-    rgba(0, 0, 255, 0) 60 %,
-    rgba(0, 0, 255, 0) 100 %)`
+    rgba(255, 255, 255, 0.46) 60 %,
+    rgba(255, 255, 255, 0.48) 100 %)`
 
     //
     const slider = document.createElement("input");
@@ -193,7 +192,7 @@ function loadVideoIntoSlide(slide, videoData) {
         // Update gradient background based on progress
         sliderContainer.style.background = `linear-gradient(to right,
         #FE0086 ${progress}%,
-        rgba(255, 255, 255, 0.1) ${progress}%)`;
+        rgba(255, 248, 248, 0.53) ${progress}%)`;
     });
 
     if (
@@ -479,6 +478,7 @@ function dragSlide(offsetPercent) {
 
 container.addEventListener("touchstart", (e) => {
     startY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
     startTime = Date.now(); // Capture start time
     isDragging = true;
 });
@@ -487,7 +487,8 @@ container.addEventListener("touchstart", (e) => {
 function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
 }
-
+let dragging_up = false;
+let dragging_sideways = false;
 // Touch move event listener
 container.addEventListener("touchmove", (e) => {
     if (!isDragging) return;
@@ -498,14 +499,27 @@ container.addEventListener("touchmove", (e) => {
     e.preventDefault(); // Prevent scrolling while dragging (needs passive: false below)
 
     const currentY = e.touches[0].clientY;
+    const currentX = e.touches[0].clientX;
     deltaY = currentY - startY;
-
+    deltaX = currentX - startX;
     // Clamp to prevent dragging beyond the last loaded slide
     // console.log(`delta y: ${deltaY} current index: ${currentIndex} : ${currentIndex >= loaded_index + 1 && deltaY < 0}`);
     if (currentIndex >= loaded_index && deltaY < 0) {
         dragLegit = false;
         return;
     }
+
+    if (Math.abs(deltaX) > Math.abs(deltaY) && !dragging_up) {
+        dragLegit = false;
+        dragging_sideways = true;
+        return;
+
+    }
+    if (dragging_sideways) {
+        dragLegit = false;
+        return;
+    }
+    dragging_up = true;
     dragLegit = true;
     const percent = (deltaY / window.innerHeight) * 100;
 
@@ -516,6 +530,8 @@ container.addEventListener("touchmove", (e) => {
 let averageVelocity = 2; // Typical speed in px/ms — adjust as needed
 
 container.addEventListener("touchend", () => {
+    dragging_up = false;
+    dragging_sideways = false;
     if (!dragLegit) return;
     if (!isDragging) return;
     isDragging = false;

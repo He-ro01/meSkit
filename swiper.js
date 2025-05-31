@@ -83,7 +83,7 @@ function updateName(slide, newName) {
 
     // If no existing text node was found, append it
     nameSpan.innerHTML = `<div class = "profile-icon">
-                                <div class = "user-profile-wrapper"><i class="fi fi-rr-user"></div></div> 
+                                <div class = "user-profile-wrapper">curl -X POST http://localhost:3000/api/scrape/scrape-redgifs</div></div> 
                                     ${newName} 
                                 <div class = "follow-icon-wrapper"> Follow
                             </div>`
@@ -223,7 +223,18 @@ function loadVideoIntoSlide(slide, videoData) {
 
 
 // 
-git 
+
+async function loadVideoWithHLS(videoEl, url) {
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+
+        await hls.loadSource(url);
+
+        hls.attachMedia(videoEl);
+    } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
+        videoEl.src = url;
+    }
+}
 async function loadHeadlessVideoWithHLS(url) {
     return;
     if (Hls.isSupported()) {

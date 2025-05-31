@@ -249,7 +249,7 @@ video {
     justify-content: center;
     margin-bottom: 20px;
     border: 5px solid #FE0086;
-   
+
 }
 
 .user-profile-wrapper {
@@ -262,6 +262,10 @@ video {
     background-color: rgba(255, 255, 255, 0.473);
     border-radius: 100%;
     overflow: hidden;
+}
+
+.user-profile-wrapper i {
+    color: rgba(255, 255, 255, 0.568);
 }
 
 .bottom-bar .icon {
@@ -329,6 +333,51 @@ video {
     font-size: 1.4em;
 }
 
+/* Container gives padding and ensures structure */
+.description.loading-placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+    align-items: flex-start;
+}
+
+/* Base skeleton shimmer style */
+.skeleton-line {
+    height: 20px;
+    border-radius: 8px;
+    background: linear-gradient(90deg,
+            #e0e0e022 25%,
+            #767676 50%,
+            #e0e0e04e 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+}
+
+/* Variants for width */
+.skeleton-line.short {
+    width: 160px;
+}
+
+.skeleton-line.medium {
+    width: 220px;
+}
+
+.skeleton-line.long {
+    width: 100%;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
 .name-description #description {
     width: relative;
     font-size: 300px;
@@ -384,6 +433,7 @@ video {
     font-weight: bold;
     line-height: 50px;
     right: 0;
+
 }
 
 .description-text.toggle {

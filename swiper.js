@@ -41,15 +41,22 @@ function createSlide(index) {
     <div class = "bottom-left">
         <div class = "name-description">
             <div class = "name-container">
-                <span class = "name-text"> <div class = "profile-icon" ><div class = "user-profile-wrapper">👤</div></div> Name<div class = "follow-icon-wrapper"> Follow</div></span>
+                <span class = "name-text"> <div class = "profile-icon">
+                    <div class = "user-profile-wrapper"><i class="fi fi-rr-user"></i></div></div> 
+                       <div class = "description loading-placeholder">
+                            <div class="skeleton-line short"></div>
+                        </div>
+                        <div class = "follow-icon-wrapper"> Follow
+                    </div>
+                </span>
             </div>
             <div class = "description-container">
                 <span class = "description-text text" >
-                    ${getSlideObjectByIndex(index).description.slice(0, 55) + "......"}
-                     <span class = "description-text toggle" onclick="toggleDescription(this)" >
-                    show more
+                   <div class = "description loading-placeholder">
+                     <div class="skeleton-line long"></div>
+                          <div class="skeleton-line short"></div>
+                   </div>
                 </span>
-                </span >
                
             </div >
         </div >
@@ -59,37 +66,7 @@ function createSlide(index) {
     container.appendChild(slide);
     return slide;
 }
-function updateDescription(slide, desc) {
-    if (!slide || !slide.id) {
-        console.warn("Slide or slide ID not found");
-        return;
-    }
 
-    const slideIdMatch = slide.id.match(/slide-(\d+)/);
-    if (!slideIdMatch) {
-        console.warn("Slide ID format invalid:", slide.id);
-        return;
-    }
-
-    const slideIndex = parseInt(slideIdMatch[1], 10);
-
-    // Update in slide_objects
-    const slideObj = getSlideObjectByIndex(slideIndex);
-    if (slideObj) {
-        slideObj.description = desc;
-    } else {
-        console.warn("No slide object found for index", slideIndex);
-        return;
-    }
-
-    // Update in DOM
-    const textSpan = slide.querySelector(".description-text.text");
-    if (textSpan) {
-        textSpan.innerHTML = `${desc.slice(0, 55) + "......"} <span class="description-text toggle" onclick="toggleDescription(this)">show more</span>`;
-    } else {
-        console.warn("Description text span not found in slide");
-    }
-}
 function updateName(slide, newName) {
     if (!slide) {
         console.warn("Slide not provided");
@@ -102,16 +79,14 @@ function updateName(slide, newName) {
         return;
     }
 
-    // Look for a text node inside .name-text (skip icons, buttons, etc.)
-    for (const node of nameSpan.childNodes) {
-        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== "") {
-            node.textContent = ` ${newName} `; // preserve spacing
-            return;
-        }
-    }
+
 
     // If no existing text node was found, append it
-    nameSpan.appendChild(document.createTextNode(` ${newName} `));
+    nameSpan.innerHTML = `<div class = "profile-icon">
+                                <div class = "user-profile-wrapper">👤</div></div> 
+                                    ${newName} 
+                                <div class = "follow-icon-wrapper"> Follow
+                            </div>`
 }
 
 function updateProfileIcon(slide, imageUrl) {
@@ -228,7 +203,7 @@ function loadVideoIntoSlide(slide, videoData) {
         typeof videoData.videoUrl === 'string' &&
         videoData.videoUrl.trim() !== ''
     ) {
-        console.log(`loading video into slide`);
+
         loadVideoWithHLS(video, videoData.videoUrl);
     }
 
@@ -237,10 +212,12 @@ function loadVideoIntoSlide(slide, videoData) {
     videoContainer.appendChild(playButton);
     slide.appendChild(videoContainer);
 
-    console.log(videoData);
-    if (videoData.description != null) updateDescription(slide, videoData.description);
-    if (videoData.username != null) updateName(slide, videoData.username);
+
+    if (videoData.description != null) updateDescription(slide, videoData.description); else updateDescription(slide, ``)
+    if (videoData.username != null) updateName(slide, videoData.username); else updateName(slide, `anoynimous`)
     if (videoData.imageUrl != null) updateProfileIcon(slide, videoData.imageUrl);
+    //
+    controlVideoPlayback();
 }
 
 
@@ -311,13 +288,29 @@ function controlVideoPlayback() {
     slides.forEach((slide, i) => {
         const video = slide.querySelector("video");
         if (!video) return;
+
+        // Only interact if metadata is loaded
+        if (video.readyState < 2) {
+            // Attach a one-time listener to play/pause when it's ready
+            video.addEventListener("loadeddata", () => {
+                if (i === 1) {
+                    video.play().catch(err => console.warn("Play error:", err));
+                } else {
+                    video.pause();
+                }
+            }, { once: true });
+            return;
+        }
+
+        // If already ready, handle immediately
         if (i === 1) {
-            video.play();
+            video.play().catch(err => console.warn("Play error:", err));
         } else {
             video.pause();
         }
     });
 }
+
 
 async function updateSlides(direction) {
     slides.forEach(slide => (slide.style.transition = "none"));
@@ -367,11 +360,9 @@ async function updateSlides(direction) {
     controlVideoPlayback();
     updateSystem();
     // Load video if data already fetched
-    console.log(`current index; ${currentIndex} | fetched videos length ${fetched_videos.length}`);
     const previousVideoData = fetched_videos[currentIndex - 1];
     const videoData = fetched_videos[currentIndex];
     const nextVideoData = fetched_videos[currentIndex + 1];
-    console.log(fetched_videos);
     if (previousVideoData != {} && previousVideoData.videoUrl.endsWith(`m3u8`)) {
         loadVideoIntoSlide(slides[0], previousVideoData);
     }
@@ -432,9 +423,52 @@ function toggleDescription(toggleBtn) {
     }
 
 }
+function updateDescription(slide, desc) {
+    if (!slide || !slide.id) {
+        console.warn("Slide or slide ID not found");
+        return;
+    }
+
+    const slideIdMatch = slide.id.match(/slide-(\d+)/);
+    if (!slideIdMatch) {
+        console.warn("Slide ID format invalid:", slide.id);
+        return;
+    }
+
+    const slideIndex = parseInt(slideIdMatch[1], 10);
+
+    // Update in slide_objects
+    const slideObj = getSlideObjectByIndex(slideIndex);
+    if (slideObj) {
+        slideObj.description = desc;
+    } else {
+        console.warn("No slide object found for index", slideIndex);
+        return;
+    }
+
+    // Update in DOM
+    const textSpan = slide.querySelector(".description-text.text");
+    if (!textSpan) {
+        console.warn("Description text span not found in slide");
+        return;
+    }
+
+    if (desc.length > 55) {
+        // Add truncation and toggle
+        textSpan.innerHTML = `
+            ${desc.slice(0, 55)}......
+            <span class="description-text toggle" onclick="toggleDescription(this)">show more</span>
+        `;
+    } else {
+        // Just show full text (no toggle)
+        textSpan.textContent = desc;
+    }
+}
+
+//
 let startTime = 0;
 let endTime = 0;
-
+let dragLegit = false;
 // Function to move slides based on drag offset percentage
 function dragSlide(offsetPercent) {
     slides.forEach((slide, i) => {
@@ -449,17 +483,40 @@ container.addEventListener("touchstart", (e) => {
     isDragging = true;
 });
 
+// Clamp function
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+// Touch move event listener
 container.addEventListener("touchmove", (e) => {
     if (!isDragging) return;
+
+    // Safety check for touch points
+    if (!e.touches || e.touches.length === 0) return;
+
+    e.preventDefault(); // Prevent scrolling while dragging (needs passive: false below)
+
     const currentY = e.touches[0].clientY;
     deltaY = currentY - startY;
+
+    // Clamp to prevent dragging beyond the last loaded slide
+    // console.log(`delta y: ${deltaY} current index: ${currentIndex} : ${currentIndex >= loaded_index + 1 && deltaY < 0}`);
+    if (currentIndex >= loaded_index && deltaY < 0) {
+        dragLegit = false;
+        return;
+    }
+    dragLegit = true;
     const percent = (deltaY / window.innerHeight) * 100;
+
     requestAnimationFrame(() => dragSlide(percent));
-});
+}); // Required for preventDefault to work
+
 
 let averageVelocity = 2; // Typical speed in px/ms — adjust as needed
 
 container.addEventListener("touchend", () => {
+    if (!dragLegit) return;
     if (!isDragging) return;
     isDragging = false;
     endTime = Date.now();
@@ -474,8 +531,7 @@ container.addEventListener("touchend", () => {
     // Optional: Clamp the multiplier to prevent extremes
     speedMultiplier = Math.max(0.5, Math.min(speedMultiplier, 3));
 
-    // Log it for debugging
-    console.log("Speed Multiplier:", speedMultiplier);
+
 
     // Use it to adjust your threshold
     const baseThreshold = 25;
@@ -524,7 +580,6 @@ async function startLoading() {
                 loadVideoIntoSlide(slides[0], video);
             }
             else if (loaded_index === currentIndex) {
-                console.log(`loading ${video.videoUrl}`);
                 loadVideoIntoSlide(slides[1], video);
             }
             else if (loaded_index === currentIndex + 1) {
@@ -533,7 +588,7 @@ async function startLoading() {
             else {
                 loadHeadlessVideoWithHLS(video.videoUrl);
             }
-            console.log(`processed ${loaded_index}`);
+
             loaded_index++;
         } catch (err) {
             console.warn("Error fetching video:", err);

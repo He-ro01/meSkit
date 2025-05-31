@@ -381,7 +381,7 @@ video {
 .name-description #description {
     width: relative;
     font-size: 300px;
-    font-weight: lighter;
+    font-weight: bold;
     letter-spacing: 2px;
     line-height: 60px;
 }
@@ -399,7 +399,7 @@ video {
 
 .name-description span {
     width: 100%;
-    font-weight: lighter;
+ 
     letter-spacing: 2px;
     /* or try 0.1em */
 

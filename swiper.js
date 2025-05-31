@@ -32,10 +32,10 @@ function createSlide(index) {
     panel.className = "slide-panel";
     panel.innerHTML = `
     <div class = "bottom-right ">
-       
-        <i class="fi fi-rs-play icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rs-heart icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
-        <i class="fi fi-rs-bookmark icon metered"><span class = "icon-text" style = "font-size:35px;">${Math.floor(Math.random() * 1000)}<span></i>
+        
+        <i class="fi fi-rs-play icon metered"><span class = "icon-text" >${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-heart icon metered"><span class = "icon-text" >${Math.floor(Math.random() * 1000)}<span></i>
+        <i class="fi fi-rs-bookmark icon metered"><span class = "icon-text" >${Math.floor(Math.random() * 1000)}<span></i>
         <i class="fi fi-rs-circle-ellipsis icon unmetered"></i>
     </div>
     <div class = "bottom-left">

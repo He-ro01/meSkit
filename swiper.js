@@ -527,7 +527,7 @@ container.addEventListener("touchmove", (e) => {
 }); // Required for preventDefault to work
 
 
-let averageVelocity = 2; // Typical speed in px/ms — adjust as needed
+let averageVelocity = 0.5; // Typical speed in px/ms — adjust as needed
 
 container.addEventListener("touchend", () => {
     dragging_up = false;

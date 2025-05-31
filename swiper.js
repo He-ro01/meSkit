@@ -83,7 +83,7 @@ function updateName(slide, newName) {
 
     // If no existing text node was found, append it
     nameSpan.innerHTML = `<div class = "profile-icon">
-                                <div class = "user-profile-wrapper">curl -X POST http://localhost:3000/api/scrape/scrape-redgifs</div></div> 
+                                <div class = "user-profile-wrapper"><i class="fi fi-rr-user"></i></div></div> 
                                     ${newName} 
                                 <div class = "follow-icon-wrapper"> Follow
                             </div>`

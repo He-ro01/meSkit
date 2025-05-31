@@ -352,8 +352,8 @@ video {
 
 /* Base skeleton shimmer style */
 .skeleton-line {
-    height: 20px;
-    border-radius: 8px;
+    height: 30px;
+    border-radius: 10px;
     background: linear-gradient(90deg,
             #e0e0e022 25%,
             #767676 50%,

@@ -13,15 +13,49 @@ let deltaX = 0;
 let isDragging = false;
 let fetched_videos = [];
 let slide_objects = [{}];
+let max_slide = -1;
 let loaded_index = 0;
 const getRandomColor = () =>
     `hsl(${Math.floor(Math.random() * 360)}, 70%, 40%)`;
 
 function createSlide(index) {
-    slide_objects.push({
-        index: index,
-        description: ``
-    });
+
+    //this is a java workspace
+    //check if the element slide_objects[index] exists, if it is, then create a new one and set slide created to true
+    let slideCreated = false;
+    console.log(`state of slide_objects ..2`)
+    console.log(slide_objects);
+    console.log(`creating slide @ ${index}`);
+    if (slide_objects[index] == null) {
+        console.log(`creating slide_object @ ${index} on the condition that slide_object[${index}] does not exist`);
+        // Create a new Slide object and assign it
+        slide_object = {
+            index: index,
+            description: ``,
+            job: {
+                cancelled: false,
+                running: false,
+                hlsInstance: null,
+                cancel() {
+                    if (this.running && !this.cancelled) {
+                        this.cancelled = true;
+                        if (this.hlsInstance) {
+                            this.hlsInstance.destroy();
+                            this.hlsInstance = null;
+                        }
+                        this.running = false;
+                    }
+                }
+            }
+        };
+        slideCreated = true;
+        //
+        if (index == -1)
+            slide_objects[0] = (slide_object);
+        else
+            slide_objects.push(slide_object);
+    }
+    //
 
     const slide = document.createElement("div");
     slide.className = "swiper-slide";
@@ -104,7 +138,7 @@ function getSlideObjectByIndex(index) {
 
 
 //
-function loadVideoIntoSlide(slide, videoData) {
+function loadVideoIntoSlide(slide, videoData, slide_object) {
     if (!slide || slide.querySelector("video")) {
         return;
     }
@@ -203,7 +237,7 @@ function loadVideoIntoSlide(slide, videoData) {
         videoData.videoUrl.trim() !== ''
     ) {
 
-        loadVideoWithHLS(video, videoData.videoUrl);
+        loadVideoWithHLS(video, videoData.videoUrl, slide_object);
     }
 
     videoContainer.appendChild(video);
@@ -212,9 +246,9 @@ function loadVideoIntoSlide(slide, videoData) {
     slide.appendChild(videoContainer);
 
 
-    if (videoData.description != null) updateDescription(slide, videoData.description); else updateDescription(slide, ``)
-    if (videoData.username != null) updateName(slide, videoData.username); else updateName(slide, `anoynimous`)
-    if (videoData.imageUrl != null) updateProfileIcon(slide, videoData.imageUrl);
+    if (videoData.description) updateDescription(slide, videoData.description); else updateDescription(slide, ``)
+    if (videoData.username) updateName(slide, videoData.username); else updateName(slide, `anoynimous`)
+    if (videoData.imageUrl) updateProfileIcon(slide, videoData.imageUrl);
     //
     controlVideoPlayback();
 }
@@ -223,17 +257,38 @@ function loadVideoIntoSlide(slide, videoData) {
 
 // 
 
-async function loadVideoWithHLS(videoEl, url) {
+async function loadVideoWithHLS(videoEl, url, slide) {
+    console.log(`and we are working with:`);
+    console.log(slide);
+    const job = slide.job;
+    job.running = true;
+
     if (Hls.isSupported()) {
         const hls = new Hls();
+        job.hlsInstance = hls;
 
-        await hls.loadSource(url);
+        if (job.cancelled) {
+            hls.destroy();
+            job.running = false;
+            return;
+        }
 
+        hls.loadSource(url);
         hls.attachMedia(videoEl);
+
+        hls.on(Hls.Events.ERROR, () => {
+            if (job.cancelled) {
+                hls.destroy();
+            }
+        });
     } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
-        videoEl.src = url;
+        if (!job.cancelled) {
+            videoEl.src = url;
+        }
     }
 }
+
+
 async function loadHeadlessVideoWithHLS(url) {
     return;
     if (Hls.isSupported()) {
@@ -312,17 +367,22 @@ function controlVideoPlayback() {
 
 
 async function updateSlides(direction) {
-    slides.forEach(slide => (slide.style.transition = "none"));
 
+    slides.forEach(slide => (slide.style.transition = "none"));
+    console.log(`${currentIndex}----start ing with-----------------`);
+    console.log(slide_objects);
+    console.log(`${currentIndex}---------------------------`);
     if (direction === "up") {
+        cancelJobByIndex(currentIndex - 1);
         currentIndex++;
+
         if (currentIndex + 5 >= fetched_videos.length) {
             await fetchVideo(); // Ensure we have space in array
 
         }
 
         const oldPrevious = slides[0];
-        removeSlideObjectByIndex(currentIndex - 2);
+
         const newVisible = slides[2];
         const newNext = createSlide(currentIndex + 1);
         newNext.className += " next";
@@ -335,22 +395,24 @@ async function updateSlides(direction) {
 
     } else if (direction === "down") {
         if (currentIndex === 0) {
-            resetSlidePositions(0); // Snap back to original position
-            return; // 🛑 Do nothing if already at the top
+            resetSlidePositions(0);
+            return;
         }
 
+        cancelJobByIndex(currentIndex + 1);
         currentIndex--;
 
         const oldNext = slides[2];
-        removeSlideObjectByIndex(currentIndex + 2);
+
         const newPrevious = createSlide(currentIndex - 1);
         newPrevious.className += " previous";
-        newPrevious.style.transform = "translateY(-100%)";
+
+        const newVisible = slides[0];
+        newVisible.className = "swiper-slide visible";
 
         slides[1].className = "swiper-slide next";
-        slides[0].className = "swiper-slide visible";
 
-        slides = [newPrevious, slides[0], slides[1]];
+        slides = [newPrevious, newVisible, slides[1]];
 
         oldNext.remove();
     }
@@ -362,19 +424,50 @@ async function updateSlides(direction) {
     const previousVideoData = fetched_videos[currentIndex - 1];
     const videoData = fetched_videos[currentIndex];
     const nextVideoData = fetched_videos[currentIndex + 1];
-    if (previousVideoData != {} && previousVideoData.videoUrl.endsWith(`m3u8`)) {
-        loadVideoIntoSlide(slides[0], previousVideoData);
-    }
-    if (!nextVideoData.empty && nextVideoData.videoUrl.endsWith(`m3u8`)) {
-        loadVideoIntoSlide(slides[2], nextVideoData);
+    if (currentIndex - 1 >= 0 && previousVideoData.videoUrl && previousVideoData.videoUrl.endsWith(`m3u8`)) {
+        console.log(`all slide objects`);
+        console.log(slide_objects);
+        console.log(`loading -1 with ${currentIndex - 1}`);
+        //
+        loadVideoIntoSlide(slides[0], previousVideoData, slide_objects[currentIndex - 1]);
     }
 
-    if (!videoData.empty && videoData.videoUrl.endsWith(`m3u8`)) {
-        loadVideoIntoSlide(slides[1], videoData);
+    if (nextVideoData.videoUrl && nextVideoData.videoUrl.endsWith(`m3u8`)) {
+        console.log(`all slide objects`);
+        console.log(slide_objects);
+        console.log(`loading 1 with ${currentIndex + 1}`);
+        console.log()
+        loadVideoIntoSlide(slides[2], nextVideoData, slide_objects[currentIndex + 1]);
     }
+
+    if (videoData.videoUrl && videoData.videoUrl.endsWith(`m3u8`)) {
+        console.log(`all slide objects`);
+        console.log(slide_objects);
+        console.log(`loading 0 with ${currentIndex - 1}`);
+        //
+        loadVideoIntoSlide(slides[0], previousVideoData, slide_objects[currentIndex - 1]);
+        //
+        loadVideoIntoSlide(slides[1], videoData, slide_objects[currentIndex]);
+    }
+    console.log(slide_objects);
 
 
 }
+function cancelJobByIndex(index) {
+    return;
+    const slide = slide_objects.find(s => s.index === index);
+    const job = slide?.job;
+
+    if (job && job.running && typeof job.cancel === 'function') {
+        job.cancel();
+        console.log(`Cancelled running job for slide index ${index}`);
+    } else if (job && !job.running) {
+        console.warn(`Job for slide index ${index} exists but is not running.`);
+    } else {
+        console.warn(`No valid job found for slide index ${index}`);
+    }
+}
+
 
 
 function resetSlidePositions(offsetPercent = 0) {
@@ -593,16 +686,16 @@ async function startLoading() {
 
             //
             if (loaded_index === currentIndex - 1) {
-                loadVideoIntoSlide(slides[0], video);
+                loadVideoIntoSlide(slides[0], video, slide_objects[currentIndex - 1]);
             }
             else if (loaded_index === currentIndex) {
-                loadVideoIntoSlide(slides[1], video);
+                loadVideoIntoSlide(slides[1], video, slide_objects[currentIndex]);
             }
             else if (loaded_index === currentIndex + 1) {
-                loadVideoIntoSlide(slides[2], video);
+                loadVideoIntoSlide(slides[2], video, slide_objects[currentIndex + 1]);
             }
             else {
-                loadHeadlessVideoWithHLS(video.videoUrl);
+                //  loadHeadlessVideoWithHLS(video.videoUrl);
             }
 
             loaded_index++;
